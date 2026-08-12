@@ -1,0 +1,3774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phone Pros - Business Dashboard</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon-32.png" sizes="32x32">
+<meta name="theme-color" content="#1F4E78">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Phone Pros">
+<style>
+:root{
+  --navy:#1F4E78;
+  --navy-dark:#123049;
+  --blue:#2E7CD6;
+  --blue-dark:#185FA5;
+  --blue-light:#E1EDFB;
+  --baby:#5EC6E8;
+  --baby-light:#E3F6FC;
+  --baby-dark:#0E7C9E;
+  --teal:#12977A;
+  --teal-dark:#0B6E58;
+  --teal-light:#DCF3EC;
+  --green:#3B9B3F;
+  --green-dark:#2C7A2F;
+  --green-light:#E4F5E1;
+  --yellow:#E8A415;
+  --yellow-dark:#9C6A0A;
+  --yellow-light:#FDF0D2;
+  --yellow-text:#4A3005;
+  --red:#E0473F;
+  --red-dark:#A32D2D;
+  --red-light:#FBE3E1;
+  --bg:#F2F7FA;
+  --card:#FFFFFF;
+  --border:#E1E5EA;
+  --text:#1B2733;
+  --text-muted:#5F6B76;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(100deg,var(--blue) 0%,var(--teal) 100%);
+  color:#fff;
+  padding:18px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+header h1{margin:0;font-size:20px;font-weight:600;}
+header p{margin:2px 0 0;font-size:13px;color:#EAF6FF;}
+nav{
+  background:var(--blue-dark);
+  display:flex;
+  gap:2px;
+  padding:0 20px;
+  overflow-x:auto;
+}
+nav button{
+  background:transparent;
+  border:none;
+  color:#D9EBFA;
+  padding:13px 16px;
+  font-size:14px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+}
+nav button:hover{color:#fff;}
+nav button.active{color:#fff;border-bottom-color:var(--baby);font-weight:600;}
+nav button[data-view="dashboard"].active{border-bottom-color:#fff;}
+nav button[data-view="calendar"].active{border-bottom-color:var(--baby);}
+nav button[data-view="deals"].active{border-bottom-color:var(--teal-light);}
+nav button[data-view="sellers"].active{border-bottom-color:var(--baby);}
+nav button[data-view="buyers"].active{border-bottom-color:var(--green-light);}
+nav button[data-view="hours"].active{border-bottom-color:var(--yellow);}
+nav button[data-view="mileage"].active{border-bottom-color:var(--teal-light);}
+nav button[data-view="pay"].active{border-bottom-color:var(--green-light);}
+nav button[data-view="expenses"].active{border-bottom-color:var(--red-light);}
+nav button[data-view="performance"].active{border-bottom-color:var(--baby);}
+nav button[data-view="listings"].active{border-bottom-color:var(--green-light);}
+nav button[data-view="priceguide"].active{border-bottom-color:var(--yellow);}
+nav button[data-view="pl"].active{border-bottom-color:var(--teal-light);}
+nav button[data-view="settings"].active{border-bottom-color:#D9EBFA;}
+main{padding:24px 28px 60px;max-width:1440px;margin:0 auto;}
+.view{display:none;}
+.view.active{display:block;}
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:14px;
+  margin-bottom:24px;
+}
+.kpi{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-left:5px solid var(--blue);
+  border-radius:var(--radius);
+  padding:16px 18px;
+}
+.kpi .label{font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
+.kpi .value{font-size:24px;font-weight:600;margin-top:6px;}
+.kpi.c-blue{border-left-color:var(--blue);}
+.kpi.c-baby{border-left-color:var(--baby-dark);}
+.kpi.c-teal{border-left-color:var(--teal);}
+.kpi.c-green{border-left-color:var(--green);background:var(--green-light);}
+.kpi.c-green .value{color:var(--green-dark);}
+.kpi.c-yellow{border-left-color:var(--yellow);}
+.kpi.c-yellow .value{color:var(--yellow-dark);}
+.kpi.c-red{border-left-color:var(--red);background:var(--red-light);}
+.kpi.c-red .value{color:var(--red-dark);}
+.kpi.c-red.zero{background:var(--green-light);border-left-color:var(--green);}
+.kpi.c-red.zero .value{color:var(--green-dark);}
+.banner{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);
+  margin-bottom:18px;font-size:13px;border:1px solid;
+}
+.banner.warn{background:var(--yellow-light);border-color:var(--yellow);color:var(--yellow-text);}
+.banner.danger{background:var(--red-light);border-color:var(--red);color:var(--red-dark);}
+.banner button{margin-left:auto;flex-shrink:0;}
+.panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:22px;
+}
+.panel.accent-teal{border-top:4px solid var(--teal);}
+.panel.accent-yellow{border-top:4px solid var(--yellow);}
+.panel.accent-green{border-top:4px solid var(--green);}
+.panel.accent-red{border-top:4px solid var(--red);}
+.panel.accent-blue{border-top:4px solid var(--blue);}
+.panel h2{margin:0 0 14px;font-size:16px;font-weight:600;}
+.filter-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:18px;
+  align-items:end;
+}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;color:var(--text-muted);font-weight:600;}
+select,input,textarea{
+  border:1px solid #CBD3DA;
+  border-radius:6px;
+  padding:8px 10px;
+  font-size:14px;
+  font-family:inherit;
+  background:#fff;
+  color:var(--text);
+}
+select:focus,input:focus,textarea:focus{outline:2px solid #7FB3E0;border-color:#7FB3E0;}
+button.btn{
+  background:var(--teal);
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  padding:9px 16px;
+  font-size:14px;
+  cursor:pointer;
+  font-weight:600;
+}
+button.btn:hover{background:var(--teal-dark);}
+button.btn.secondary{background:#fff;color:var(--blue-dark);border:1px solid var(--blue-dark);}
+button.btn.secondary:hover{background:var(--blue-light);}
+button.btn.danger{background:#fff;color:var(--red-dark);border:1px solid var(--red);}
+button.btn.danger:hover{background:var(--red-light);}
+button.btn.blue{background:var(--blue);}
+button.btn.blue:hover{background:var(--blue-dark);}
+button.btn.green{background:var(--green);}
+button.btn.green:hover{background:var(--green-dark);}
+button.btn.amber{background:var(--yellow);color:var(--yellow-text);}
+button.btn.amber:hover{background:#CE8D0F;}
+button.btn.red{background:var(--red);}
+button.btn.red:hover{background:var(--red-dark);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{
+  background:var(--blue-dark);
+  color:#fff;
+  text-align:left;
+  padding:9px 10px;
+  position:sticky;
+  top:0;
+  white-space:nowrap;
+}
+thead th.sortable{cursor:pointer;user-select:none;}
+thead th.sortable:hover{background:var(--blue);}
+thead th .arrow{font-size:10px;margin-left:4px;opacity:.8;}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody tr:hover{background:var(--baby-light);}
+tbody tr.aging-watch{background:var(--yellow-light);}
+tbody tr.aging-stale{background:var(--red-light);}
+.table-wrap{overflow-x:auto;max-height:480px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;}
+.badge{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge.sold{background:var(--teal-light);color:var(--teal-dark);}
+.badge.stock{background:var(--baby-light);color:var(--baby-dark);}
+.badge.grade-A{background:var(--green-light);color:var(--green-dark);}
+.badge.grade-B{background:var(--blue-light);color:var(--blue-dark);}
+.badge.grade-C{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.grade-D{background:var(--red-light);color:var(--red-dark);}
+.badge.age-fresh{background:var(--green-light);color:var(--green-dark);}
+.badge.age-watch{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.age-stale{background:var(--red-light);color:var(--red-dark);}
+.badge.cat{background:var(--blue-light);color:var(--blue-dark);}
+.badge.repeat{background:var(--baby-light);color:var(--baby-dark);}
+.badge.tag-vip{background:var(--green-light);color:var(--green-dark);}
+.badge.tag-watch{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.tag-blacklist{background:var(--red-light);color:var(--red-dark);}
+.badge.unlock-unlocked{background:var(--green-light);color:var(--green-dark);}
+.badge.unlock-locked{background:var(--red-light);color:var(--red-dark);}
+.badge.unlock-carrier{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.unlock-unknown{background:var(--blue-light);color:var(--blue-dark);}
+.badge.ot{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.imei-clean{background:var(--green-light);color:var(--green-dark);}
+.badge.imei-notchecked{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.imei-blacklisted{background:var(--red-light);color:var(--red-dark);}
+.badge.imei-financed{background:var(--red-light);color:var(--red-dark);}
+.badge.listing-active{background:var(--blue-light);color:var(--blue-dark);}
+.badge.listing-sold{background:var(--green-light);color:var(--green-dark);}
+.badge.listing-removed{background:#EDF1F5;color:var(--text-muted);}
+.badge.paidby-company{background:var(--blue-light);color:var(--blue-dark);}
+.badge.paidby-owed{background:var(--red-light);color:var(--red-dark);}
+.badge.paidby-reimbursed{background:var(--green-light);color:var(--green-dark);}
+.profit-pos{color:var(--green-dark);font-weight:700;}
+.profit-neg{color:var(--red-dark);font-weight:700;}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px;}
+.form-grid .field.wide{grid-column:1/-1;}
+.actions-cell{display:flex;gap:6px;}
+.icon-btn{background:none;border:none;cursor:pointer;font-size:14px;padding:4px 7px;border-radius:5px;color:var(--text-muted);}
+.icon-btn:hover{background:var(--blue-light);color:var(--blue-dark);}
+.icon-btn.del:hover{background:var(--red-light);color:var(--red-dark);}
+.empty-msg{padding:30px;text-align:center;color:var(--text-muted);font-size:14px;}
+.pill-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.pill{background:var(--blue-light);color:var(--blue-dark);padding:6px 12px;border-radius:20px;font-size:13px;display:flex;align-items:center;gap:8px;}
+.pill button{background:none;border:none;color:var(--blue-dark);cursor:pointer;font-weight:700;font-size:13px;padding:0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:900px){.two-col,.three-col{grid-template-columns:1fr;}}
+.hint{font-size:12px;color:var(--text-muted);margin-top:-6px;margin-bottom:14px;}
+.toast{
+  position:fixed;bottom:20px;right:20px;background:var(--teal-dark);color:#fff;
+  padding:12px 18px;border-radius:8px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.2);
+  opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;z-index:999;
+}
+.toast.show{opacity:1;transform:translateY(0);}
+.chart-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.chart-bar .name{width:110px;font-size:13px;flex-shrink:0;}
+.chart-bar .track{flex:1;background:#EDF1F5;border-radius:5px;height:16px;overflow:hidden;}
+.chart-bar .fill{background:var(--blue);height:100%;border-radius:5px;}
+.chart-bar .amt{width:80px;text-align:right;font-size:13px;font-weight:600;flex-shrink:0;}
+.panel.aging-panel{border:1px solid var(--yellow);background:linear-gradient(180deg,var(--yellow-light) 0%,#fff 70px);}
+.panel.aging-panel h2{color:var(--yellow-dark);}
+.aging-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.aging-row:last-child{border-bottom:none;}
+.aging-row .dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.aging-row .dot.age-watch{background:var(--yellow);}
+.aging-row .dot.age-stale{background:var(--red);}
+.aging-row .info{flex:1;font-size:13px;}
+.aging-row .info b{font-weight:600;}
+.aging-row .days{font-weight:700;font-size:14px;}
+.aging-row .days.age-watch{color:var(--yellow-dark);}
+.aging-row .days.age-stale{color:var(--red-dark);}
+.vchart{display:flex;align-items:flex-end;gap:10px;height:150px;}
+.vchart .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.vchart .col .val{font-size:11px;font-weight:600;margin-bottom:4px;white-space:nowrap;}
+.vchart .col .bar{width:100%;max-width:36px;border-radius:5px 5px 0 0;}
+.vchart .col .lbl{font-size:11px;color:var(--text-muted);margin-top:6px;}
+.search-row{display:flex;gap:12px;margin-bottom:14px;align-items:center;flex-wrap:wrap;}
+.search-row input[type="text"]{min-width:220px;}
+.backup-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:14px;}
+.backup-badge.ok{background:var(--green-light);color:var(--green-dark);}
+.backup-badge.warn{background:var(--yellow-light);color:var(--yellow-text);}
+.backup-badge.danger{background:var(--red-light);color:var(--red-dark);}
+.kpi-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;}
+.kpi{padding:11px 13px;border-left-width:4px;}
+.kpi .label{font-size:11px;}
+.kpi .value{font-size:19px;margin-top:3px;}
+details.panel{padding:0;overflow:hidden;}
+details.panel summary{
+  list-style:none;cursor:pointer;padding:16px 20px;font-size:16px;font-weight:600;
+  display:flex;align-items:center;justify-content:space-between;
+}
+details.panel summary::-webkit-details-marker{display:none;}
+details.panel summary::after{content:"\2304";font-size:16px;color:var(--text-muted);transition:transform .15s;}
+details.panel[open] summary::after{transform:rotate(180deg);}
+details.panel .details-body{padding:0 20px 20px;}
+details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted);margin-left:10px;}
+.field-group{border:1px solid var(--border);border-radius:8px;padding:12px 14px 4px;margin-bottom:14px;background:var(--bg);}
+.field-group summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--blue-dark);list-style:none;margin-bottom:10px;}
+.field-group summary::-webkit-details-marker{display:none;}
+.field-group summary::before{content:"\25B8 ";}
+.field-group[open] summary::before{content:"\25BE ";}
+.compact-toggle{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-muted);}
+.compact-toggle input{width:auto;}
+.table-wrap.compact .extra-col{display:none;}
+.scan-modal{position:fixed;inset:0;background:rgba(10,20,30,.88);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.scan-box{background:#12202B;border-radius:12px;padding:16px;max-width:420px;width:100%;text-align:center;}
+.scan-box video{width:100%;border-radius:8px;background:#000;max-height:60vh;}
+.scan-status{color:#fff;font-size:13px;margin:12px 0;}
+.badge.pickup-requested{background:var(--yellow-light);color:var(--yellow-dark);}
+.badge.pickup-confirmed{background:var(--blue-light);color:var(--blue-dark);}
+.badge.pickup-completed{background:var(--green-light);color:var(--green-dark);}
+.badge.pickup-cancelled{background:#EDF1F5;color:var(--text-muted);}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.cal-nav .cal-month-label{font-size:16px;font-weight:600;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.cal-dow{font-size:11px;font-weight:600;color:var(--text-muted);text-align:center;padding:4px 0;text-transform:uppercase;}
+.cal-day{min-height:74px;border:1px solid var(--border);border-radius:8px;padding:6px;cursor:pointer;background:#fff;display:flex;flex-direction:column;gap:5px;}
+.cal-day:hover{border-color:var(--blue);}
+.cal-day.other-month{background:var(--bg);opacity:.55;}
+.cal-day.today{border-color:var(--teal);border-width:2px;}
+.cal-day.selected{background:var(--blue-light);border-color:var(--blue);}
+.cal-day .day-num{font-size:12px;font-weight:600;}
+.cal-day .dots{display:flex;flex-wrap:wrap;gap:3px;align-items:center;}
+.cal-day .dots .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cal-day .more{font-size:10px;color:var(--text-muted);}
+@media(max-width:700px){.cal-day{min-height:52px;}}
+.pickup-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.pickup-row:last-child{border-bottom:none;}
+.pickup-row .info{flex:1;min-width:200px;font-size:13px;}
+.pickup-row .info b{font-weight:600;}
+.pickup-row .when{font-weight:700;font-size:13px;min-width:120px;}
+.pickup-row.overdue{background:var(--red-light);border-radius:6px;}
+.gcal-sync-panel{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.gcal-sync-status{font-size:13px;color:var(--text-muted);}
+.gcal-sync-status.ok{color:var(--teal-dark);font-weight:600;}
+.gcal-sync-status.err{color:var(--red-dark, #B3261E);font-weight:600;}
+</style>
+</head>
+<body>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<header>
+  <div>
+    <h1>Phone Pros</h1>
+    <p>Device flipping business dashboard</p>
+  </div>
+  <div style="font-size:13px;color:#EAF6FF;" id="todayLabel"></div>
+</header>
+
+<nav id="tabNav">
+  <button data-view="dashboard" class="active">Dashboard</button>
+  <button data-view="calendar">Pickup Calendar</button>
+  <button data-view="deals">Deal Log</button>
+  <button data-view="listings">Listings</button>
+  <button data-view="sellers">Sellers</button>
+  <button data-view="buyers">Buyers</button>
+  <button data-view="hours">Employee Hours</button>
+  <button data-view="mileage">Mileage Log</button>
+  <button data-view="pay">Pay Tracker</button>
+  <button data-view="expenses">Expenses</button>
+  <button data-view="performance">Performance</button>
+  <button data-view="priceguide">Price Guide</button>
+  <button data-view="pl">P&amp;L Summary</button>
+  <button data-view="settings">Settings</button>
+</nav>
+
+<main>
+
+<div class="view active" id="view-dashboard">
+  <div id="backupBanner"></div>
+  <div id="imeiBanner"></div>
+  <div id="pickupBanner"></div>
+
+  <div class="panel accent-blue">
+    <h2>Filters</h2>
+    <div class="filter-row">
+      <div class="field">
+        <label>Employee</label>
+        <select id="f-employee"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select id="f-status"><option value="">All</option><option value="Sold">Sold</option><option value="In Stock">In Stock</option></select>
+      </div>
+      <div class="field">
+        <label>Grade</label>
+        <select id="f-grade"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Lead source</label>
+        <select id="f-lead"><option value="">All</option></select>
+      </div>
+      <div class="field">
+        <label>Aging</label>
+        <select id="f-aging">
+          <option value="">All</option>
+          <option value="fresh">Fresh (under 14 days)</option>
+          <option value="watch">Aging (14-29 days)</option>
+          <option value="stale">Stale (30+ days)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>From</label>
+        <input type="date" id="f-from">
+      </div>
+      <div class="field">
+        <label>To</label>
+        <input type="date" id="f-to">
+      </div>
+      <div class="field">
+        <button class="btn secondary" id="clearFilters">Clear filters</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="panel aging-panel" id="agingPanel">
+    <h2>Aging inventory - sitting 14+ days</h2>
+    <div id="agingList"></div>
+  </div>
+
+  <div class="panel" id="topSellersPanel" style="border-top:4px solid var(--baby-dark);">
+    <h2>Top repeat sellers</h2>
+    <div id="topSellersList"></div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel accent-blue">
+      <h2>Monthly profit trend (last 6 months, all data)</h2>
+      <div id="chartProfitTrend"></div>
+    </div>
+    <div class="panel accent-teal">
+      <h2>Monthly deals bought (last 6 months, all data)</h2>
+      <div id="chartVolumeTrend"></div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel">
+      <h2>Profit by employee</h2>
+      <div id="chartEmployee"></div>
+    </div>
+    <div class="panel">
+      <h2>Deals by lead source</h2>
+      <div id="chartLead"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Filtered deals</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Client</th><th>Employee</th><th>Device</th><th>Grade</th>
+          <th>Buy</th><th>Sell</th><th>Profit</th><th>Status</th><th>Age</th>
+        </tr></thead>
+        <tbody id="dashDealsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-calendar">
+  <div class="kpi-grid" id="calendarKpiGrid"></div>
+
+  <div class="panel">
+    <h2>Google Calendar sync</h2>
+    <div class="gcal-sync-panel">
+      <button class="btn secondary" id="gcalConnectBtn">Connect Google Account</button>
+      <button class="btn" id="gcalSyncBtn" style="display:none;">Sync bookings now</button>
+      <span class="gcal-sync-status" id="gcalSyncStatus">Not connected.</span>
+    </div>
+    <div class="hint">Pulls in bookings made through your public "Phone Pros Pickup" booking page and adds them here as pickups (it won't duplicate ones you already have, and it never overwrites edits you've made). This runs from this browser only - it's not automatic in the background. Connecting here also turns on cross-device data sync, in Settings.</div>
+  </div>
+
+  <div class="panel accent-teal">
+    <h2 id="pickupFormTitle">Schedule a pickup</h2>
+    <input type="hidden" id="pickup-id">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="pickup-date"></div>
+      <div class="field"><label>Time</label><input type="time" id="pickup-time"></div>
+      <div class="field"><label>Seller name</label><input type="text" id="pickup-seller" placeholder="John Smith"></div>
+      <div class="field"><label>Seller phone</label><input type="text" id="pickup-phone" placeholder="(555) 123-4567"></div>
+      <div class="field"><label>Device model</label><input type="text" id="pickup-model" placeholder="iPhone 13 Pro"></div>
+      <div class="field"><label>Pickup location</label><input type="text" id="pickup-location" placeholder="Downtown"></div>
+      <div class="field"><label>Driver</label><select id="pickup-driver"></select></div>
+      <div class="field"><label>Status</label>
+        <select id="pickup-status">
+          <option value="Requested">Requested</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+      </div>
+      <div class="field wide"><label>Notes</label><input type="text" id="pickup-notes" placeholder="e.g. gate code 4521"></div>
+    </div>
+    <div class="hint">Scheduling a pickup here just puts it on the calendar - it doesn't create a deal. Once the device is actually picked up, log it on the Deal Log tab (or import it from the driver form) as usual.</div>
+    <button class="btn" id="savePickupBtn">Save pickup</button>
+    <button class="btn secondary" id="cancelPickupBtn" style="display:none;">Cancel edit</button>
+  </div>
+
+  <div class="panel">
+    <div class="cal-nav">
+      <button class="btn secondary" id="calPrevBtn">&lsaquo; Prev</button>
+      <span class="cal-month-label" id="calMonthLabel"></span>
+      <button class="btn secondary" id="calTodayBtn">Today</button>
+      <button class="btn secondary" id="calNextBtn">Next &rsaquo;</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+
+  <div class="panel">
+    <h2 id="pickupAgendaTitle">Upcoming pickups</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="calShowAllBtn" style="display:none;">Show all upcoming</button>
+      <button class="btn secondary" id="exportPickupsCsvBtn">Export pickups (CSV)</button>
+    </div>
+    <div id="pickupAgenda"></div>
+  </div>
+</div>
+
+<div class="view" id="view-deals">
+  <div class="panel accent-teal">
+    <h2 id="dealFormTitle">Add a deal</h2>
+    <input type="hidden" id="deal-id">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="deal-date"></div>
+      <div class="field"><label>Client name</label><input type="text" id="deal-client" placeholder="John Smith" list="clientNamesList" autocomplete="off"><datalist id="clientNamesList"></datalist></div>
+      <div class="field"><label>Employee (bought by)</label><select id="deal-employee"></select></div>
+      <div class="field"><label>Device model</label><input type="text" id="deal-model" placeholder="iPhone 13 Pro"></div>
+      <div class="field"><label>Grade</label><select id="deal-grade"></select></div>
+      <div class="field"><label>Buy price ($)</label><input type="number" step="0.01" id="deal-buyprice"></div>
+    </div>
+
+    <details class="field-group" id="dealMoreDetails">
+      <summary>More purchase details (time, phone, source, storage, costs, notes)</summary>
+      <div class="form-grid">
+        <div class="field"><label>Time</label><input type="time" id="deal-time"></div>
+        <div class="field"><label>Seller phone</label><input type="text" id="deal-sellerphone" placeholder="(555) 123-4567"></div>
+        <div class="field"><label>Buy location</label><input type="text" id="deal-buyloc" placeholder="Downtown"></div>
+        <div class="field"><label>Lead source</label><select id="deal-lead"></select></div>
+        <div class="field"><label>Storage</label><input type="text" id="deal-storage" placeholder="256GB"></div>
+        <div class="field"><label>Unlock status</label><select id="deal-unlock"></select></div>
+        <div class="field"><label>IMEI / Serial</label>
+          <div style="display:flex;gap:6px;">
+            <input type="text" id="deal-imei" placeholder="15-17 digits" style="flex:1;">
+            <button type="button" class="btn secondary" id="scanImeiBtn" style="white-space:nowrap;">Scan</button>
+          </div>
+        </div>
+        <div class="field"><label>IMEI / blacklist check</label><select id="deal-imeistatus"></select></div>
+        <div class="field"><label>Other costs ($) - repairs, fees</label><input type="number" step="0.01" id="deal-othercost"></div>
+        <div class="field wide"><label>Notes</label><textarea id="deal-notes" rows="2" placeholder="Screen has minor scratch"></textarea></div>
+      </div>
+    </details>
+
+    <details class="field-group" id="dealSaleDetails">
+      <summary>Sale details (fill in once it's sold)</summary>
+      <div class="form-grid">
+        <div class="field"><label>Sell price ($)</label><input type="number" step="0.01" id="deal-sellprice"></div>
+        <div class="field"><label>Sell date</label><input type="date" id="deal-selldate"></div>
+        <div class="field"><label>Buyer name</label><input type="text" id="deal-buyer" list="buyerNamesList" autocomplete="off"><datalist id="buyerNamesList"></datalist></div>
+        <div class="field"><label>Sale location</label><input type="text" id="deal-saleloc"></div>
+      </div>
+    </details>
+
+    <div class="hint">Date defaults to today. Start typing a client or buyer name to autocomplete from past deals. Press Enter in any field to save. For the IMEI, tap Scan to use your camera, or just point a handheld USB/Bluetooth scanner at the barcode while that field is focused - it types the number in for you. Mileage and gas are tracked per day on the Mileage Log tab, not per deal.</div>
+    <button class="btn" id="saveDealBtn">Save deal</button>
+    <button class="btn secondary" id="cancelDealBtn" style="display:none;">Cancel edit</button>
+  </div>
+
+  <div class="panel">
+    <h2>All deals</h2>
+    <div class="search-row">
+      <input type="text" id="dealSearch" placeholder="Search client, phone, device, buyer, notes...">
+      <button class="btn secondary" id="exportDealsCsvBtn">Export deals (CSV)</button>
+      <label class="compact-toggle"><input type="checkbox" id="dealCompactToggle"> Compact view (hide extra columns)</label>
+      <div class="hint" style="margin:0;">Click a column header to sort.</div>
+    </div>
+    <div class="table-wrap" id="dealsTableWrap">
+      <table>
+        <thead><tr>
+          <th class="sortable" data-sort="date">Date<span class="arrow"></span></th>
+          <th class="sortable" data-sort="client">Client<span class="arrow"></span></th>
+          <th class="extra-col">Phone</th>
+          <th class="sortable" data-sort="employee">Employee<span class="arrow"></span></th>
+          <th class="extra-col">Storage</th><th class="extra-col">Unlock</th><th class="extra-col">IMEI</th><th>IMEI check</th><th>Grade</th>
+          <th class="sortable" data-sort="buyPrice">Buy<span class="arrow"></span></th>
+          <th class="extra-col">Other costs</th>
+          <th class="sortable" data-sort="sellPrice">Sell<span class="arrow"></span></th>
+          <th class="extra-col">Sell date</th><th>Buyer</th><th class="extra-col">Sale loc</th>
+          <th class="sortable" data-sort="profit">Profit<span class="arrow"></span></th>
+          <th class="sortable" data-sort="status">Status<span class="arrow"></span></th>
+          <th class="sortable" data-sort="age">Age<span class="arrow"></span></th>
+          <th class="extra-col">Notes</th><th></th>
+        </tr></thead>
+        <tbody id="dealsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-listings">
+  <div class="kpi-grid" id="listingKpiGrid"></div>
+  <div class="panel accent-blue">
+    <h2 id="listingFormTitle">List a device</h2>
+    <input type="hidden" id="listing-id">
+    <div class="form-grid">
+      <div class="field wide"><label>Device</label><select id="listing-deal"></select></div>
+      <div class="field"><label>Platform</label><select id="listing-platform"></select></div>
+      <div class="field"><label>List price ($)</label><input type="number" step="0.01" id="listing-price"></div>
+      <div class="field"><label>Date listed</label><input type="date" id="listing-date"></div>
+      <div class="field"><label>Status</label><select id="listing-status">
+        <option value="Active">Active</option><option value="Sold">Sold</option><option value="Removed">Removed</option>
+      </select></div>
+    </div>
+    <div class="hint">This tracks where a device is advertised and at what price so you don't double-sell it. Recording the actual sale still happens in the Deal Log's Sale details.</div>
+    <button class="btn" id="saveListingBtn">Save listing</button>
+    <button class="btn secondary" id="cancelListingBtn" style="display:none;">Cancel edit</button>
+  </div>
+
+  <div class="panel">
+    <h2>All listings</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="exportListingsCsvBtn">Export listings (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Device</th><th>Platform</th><th>List price</th><th>Date listed</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="listingsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-sellers">
+  <div class="kpi-grid" id="sellerKpiGrid"></div>
+  <div class="panel accent-blue">
+    <h2>Sellers</h2>
+    <p class="hint" style="margin-top:-2px;">Automatically built from your Deal Log. Sellers with 2 or more deals are flagged as repeat sellers. Tag and note them to build a simple relationship history.</p>
+    <div class="search-row">
+      <input type="text" id="sellerSearch" placeholder="Search name or phone...">
+      <button class="btn secondary" id="exportSellersCsvBtn">Export sellers (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Seller</th><th>Phone</th><th>Deals</th><th>Total spent</th><th>Avg buy price</th>
+          <th>First deal</th><th>Last deal</th><th>Tag</th><th>Notes</th>
+        </tr></thead>
+        <tbody id="sellersBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-buyers">
+  <div class="kpi-grid" id="buyerKpiGrid"></div>
+  <div class="panel accent-green">
+    <h2>Buyers</h2>
+    <p class="hint" style="margin-top:-2px;">Who you sell devices to, built automatically from Sold deals in your Deal Log. Buyers with 2 or more purchases are flagged as repeat buyers.</p>
+    <div class="search-row">
+      <input type="text" id="buyerSearch" placeholder="Search buyer name...">
+      <button class="btn secondary" id="exportBuyersCsvBtn">Export buyers (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Buyer</th><th>Devices bought</th><th>Total revenue</th><th>Avg sell price</th>
+          <th>Usual sale location</th><th>First sale</th><th>Last sale</th><th>Tag</th><th>Notes</th>
+        </tr></thead>
+        <tbody id="buyersBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-hours">
+  <div class="panel accent-yellow">
+    <h2 id="hoursFormTitle">Log hours</h2>
+    <input type="hidden" id="hours-id">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="hours-date"></div>
+      <div class="field"><label>Employee</label><select id="hours-employee"></select></div>
+      <div class="field"><label>Clock in</label><input type="time" id="hours-in"></div>
+      <div class="field"><label>Clock out</label><input type="time" id="hours-out"></div>
+      <div class="field"><label>Unpaid break (hrs)</label><input type="number" step="0.25" id="hours-break" value="0"></div>
+      <div class="field wide"><label>Notes</label><input type="text" id="hours-notes"></div>
+    </div>
+    <button class="btn amber" id="saveHoursBtn">Save hours</button>
+    <button class="btn secondary" id="cancelHoursBtn" style="display:none;">Cancel edit</button>
+  </div>
+
+  <div class="panel">
+    <h2>Hours log</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="exportHoursCsvBtn">Export hours (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Employee</th><th>Clock in</th><th>Clock out</th><th>Break</th>
+          <th>Hours worked</th><th>Overtime</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="hoursBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-mileage">
+  <div class="kpi-grid" id="mileageKpiGrid"></div>
+
+  <div class="panel accent-teal">
+    <h2>Start of day</h2>
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="mstart-date"></div>
+      <div class="field"><label>Employee</label><select id="mstart-employee"></select></div>
+      <div class="field"><label>Vehicle</label><select id="mstart-vehicle"></select></div>
+      <div class="field"><label>Odometer - start of day</label><input type="number" step="1" id="mstart-odo" placeholder="e.g. 84213"></div>
+    </div>
+    <div class="hint">Enter the real current odometer reading each morning - if the car went home overnight, this usually won't match yesterday's end reading, and that's expected.</div>
+    <div class="hint" id="mstart-gap-hint" style="display:none;"></div>
+    <button class="btn" id="startDayBtn">Start day</button>
+  </div>
+
+  <div class="panel accent-yellow">
+    <h2>End of day</h2>
+    <div class="form-grid">
+      <div class="field wide"><label>Open day to close out</label><select id="mend-entry"><option value="">No open days - start one above first</option></select></div>
+      <div class="field"><label>Odometer - end of day</label><input type="number" step="1" id="mend-odo" placeholder="e.g. 84298"></div>
+      <div class="field"><label>Gas cost ($)</label><input type="number" step="0.01" id="mend-gas"></div>
+      <div class="field"><label>Gas paid by</label><select id="mend-paidby">
+        <option value="company">Company card</option>
+        <option value="employee">Employee - needs reimbursement</option>
+      </select></div>
+      <div class="field wide"><label>Notes</label><input type="text" id="mend-notes" placeholder="e.g. 3 pickups across town"></div>
+    </div>
+    <button class="btn amber" id="endDayBtn">End day</button>
+  </div>
+
+  <details class="panel" id="mileageManualDetails">
+    <summary>Manual entry / edit an existing day<span class="sub">for corrections or backfilling - not needed for daily use</span></summary>
+    <div class="details-body">
+      <input type="hidden" id="mileage-id">
+      <div class="form-grid">
+        <div class="field"><label>Date</label><input type="date" id="mileage-date"></div>
+        <div class="field"><label>Employee</label><select id="mileage-employee"></select></div>
+        <div class="field"><label>Vehicle</label><select id="mileage-vehicle"></select></div>
+        <div class="field"><label>Odometer - start of day</label><input type="number" step="1" id="mileage-start" placeholder="e.g. 84213"></div>
+        <div class="field"><label>Odometer - end of day</label><input type="number" step="1" id="mileage-end" placeholder="e.g. 84298"></div>
+        <div class="field"><label>Personal/commute miles</label><input type="number" step="1" id="mileage-personalmiles" placeholder="0"></div>
+        <div class="field"><label>Gas cost ($)</label><input type="number" step="0.01" id="mileage-gas"></div>
+        <div class="field"><label>Gas paid by</label><select id="mileage-paidby">
+          <option value="company">Company card</option>
+          <option value="employee">Employee - needs reimbursement</option>
+        </select></div>
+        <div class="field"><label>Reimbursed?</label><select id="mileage-reimbursed">
+          <option value="no">Not yet</option>
+          <option value="yes">Reimbursed</option>
+        </select></div>
+        <div class="field wide"><label>Notes</label><input type="text" id="mileage-notes" placeholder="e.g. 3 pickups across town"></div>
+      </div>
+      <button class="btn secondary" id="saveMileageBtn">Save</button>
+      <button class="btn secondary" id="cancelMileageBtn" style="display:none;">Cancel edit</button>
+    </div>
+  </details>
+
+  <div class="panel">
+    <h2>Mileage log</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="exportMileageCsvBtn">Export mileage log (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Employee</th><th>Vehicle</th><th>Start</th><th>End</th>
+          <th>Business mi</th><th>Personal mi</th><th>Gas</th><th>Paid by</th><th>$/mile</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="mileageBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-pay">
+  <div class="panel accent-green">
+    <h2>Calculate pay for a period</h2>
+    <div class="form-grid">
+      <div class="field"><label>Employee</label><select id="pay-employee"></select></div>
+      <div class="field"><label>Period start</label><input type="date" id="pay-start"></div>
+      <div class="field"><label>Period end</label><input type="date" id="pay-end"></div>
+      <div class="field"><label>Hourly rate ($)</label><input type="number" step="0.5" id="pay-rate" value="18"></div>
+    </div>
+    <button class="btn green" id="calcPayBtn">Calculate and save</button>
+    <div class="hint">Overtime pays 1.5x for hours worked beyond 8 in a single day.</div>
+  </div>
+
+  <div class="panel">
+    <h2>Saved pay periods</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="exportPayCsvBtn">Export pay periods (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Employee</th><th>Period start</th><th>Period end</th><th>Rate</th>
+          <th>Regular hrs</th><th>OT hrs</th><th>Regular pay</th><th>OT pay</th><th>Commission</th><th>Total pay</th><th></th>
+        </tr></thead>
+        <tbody id="payBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-expenses">
+  <div class="panel accent-red">
+    <h2 id="expenseFormTitle">Log a business expense</h2>
+    <input type="hidden" id="expense-id">
+    <div class="form-grid">
+      <div class="field"><label>Date</label><input type="date" id="expense-date"></div>
+      <div class="field"><label>Category</label><select id="expense-category"></select></div>
+      <div class="field"><label>Amount ($)</label><input type="number" step="0.01" id="expense-amount"></div>
+      <div class="field wide"><label>Notes</label><input type="text" id="expense-notes" placeholder="e.g. October storefront rent"></div>
+    </div>
+    <div class="hint">Overhead like rent, tools, insurance, and marketing. These aren't tied to a specific deal but count against net profit.</div>
+    <button class="btn red" id="saveExpenseBtn">Save expense</button>
+  </div>
+
+  <div class="panel">
+    <h2>Expense log</h2>
+    <div class="search-row">
+      <button class="btn secondary" id="exportExpensesCsvBtn">Export expenses (CSV)</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Category</th><th>Amount</th><th>Notes</th><th></th>
+        </tr></thead>
+        <tbody id="expensesBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-performance">
+  <div class="panel">
+    <h2>Employee performance</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Employee</th><th>Devices bought</th><th>$ spent</th><th>Devices sold</th>
+          <th>$ revenue</th><th>Profit generated</th><th>Avg profit / device</th><th>Miles driven</th><th>Commission earned</th>
+        </tr></thead>
+        <tbody id="perfBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-priceguide">
+  <div class="panel accent-yellow">
+    <h2>Buy price calculator</h2>
+    <p class="hint" style="margin-top:-2px;">Pick a device model (and optionally a grade) to see what you've historically paid, sold for, and made - then get a suggested max buy price for a target margin.</p>
+    <div class="filter-row">
+      <div class="field">
+        <label>Model</label>
+        <input type="text" id="pg-model" list="pgModelList" placeholder="e.g. iPhone 13 Pro">
+        <datalist id="pgModelList"></datalist>
+      </div>
+      <div class="field">
+        <label>Grade</label>
+        <select id="pg-grade"><option value="">All grades</option></select>
+      </div>
+      <div class="field">
+        <label>Target margin (%)</label>
+        <input type="number" step="1" id="pg-margin" value="25">
+      </div>
+      <div class="field"><button class="btn amber" id="pgCalcBtn">Calculate</button></div>
+    </div>
+    <div id="pgResults"></div>
+  </div>
+  <div class="panel">
+    <h2>Matching past deals</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Date</th><th>Grade</th><th>Buy</th><th>Sell</th><th>Profit</th><th>Margin</th>
+        </tr></thead>
+        <tbody id="pgDealsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-pl">
+  <div class="panel accent-teal">
+    <h2>P&amp;L summary</h2>
+    <p class="hint" style="margin-top:-2px;">A full profit-and-loss statement for a date range, including payroll - useful for taxes or handing to an accountant. This includes payroll, so it will differ from the Dashboard's "Net profit" KPI.</p>
+    <div class="filter-row">
+      <div class="field"><button class="btn secondary" id="plThisMonth">This month</button></div>
+      <div class="field"><button class="btn secondary" id="plThisQuarter">This quarter</button></div>
+      <div class="field"><button class="btn secondary" id="plThisYear">This year</button></div>
+      <div class="field"><button class="btn secondary" id="plLastYear">Last year</button></div>
+      <div class="field"><button class="btn secondary" id="plAllTime">All time</button></div>
+      <div class="field"><label>From</label><input type="date" id="pl-from"></div>
+      <div class="field"><label>To</label><input type="date" id="pl-to"></div>
+      <div class="field"><button class="btn green" id="plCalcBtn">Run report</button></div>
+    </div>
+    <div id="plResults"></div>
+    <button class="btn secondary" id="exportPlCsvBtn" style="margin-top:14px;">Export summary (CSV)</button>
+  </div>
+</div>
+
+<div class="view" id="view-settings">
+  <div class="panel accent-blue">
+    <h2>Employees</h2>
+    <div class="filter-row">
+      <div class="field"><label>Add employee</label><input type="text" id="newEmployee" placeholder="Employee name"></div>
+      <div class="field"><button class="btn blue" id="addEmployeeBtn">Add</button></div>
+    </div>
+    <div class="pill-list" id="employeeList"></div>
+  </div>
+  <div class="panel accent-blue">
+    <h2>Lead sources</h2>
+    <div class="filter-row">
+      <div class="field"><label>Add lead source</label><input type="text" id="newLead" placeholder="e.g. Instagram"></div>
+      <div class="field"><button class="btn blue" id="addLeadBtn">Add</button></div>
+    </div>
+    <div class="pill-list" id="leadList"></div>
+  </div>
+  <div class="panel accent-blue">
+    <h2>Vehicles</h2>
+    <p class="hint" style="margin-top:-2px;">Add each car used for pickups here. They show up as choices on the Mileage Log tab, which tracks miles and gas per vehicle per day.</p>
+    <div class="filter-row">
+      <div class="field"><label>Add vehicle</label><input type="text" id="newVehicle" placeholder="e.g. Silver Camry"></div>
+      <div class="field"><button class="btn blue" id="addVehicleBtn">Add</button></div>
+    </div>
+    <div class="pill-list" id="vehicleList"></div>
+  </div>
+  <div class="panel accent-red">
+    <h2>Expense categories</h2>
+    <div class="filter-row">
+      <div class="field"><label>Add category</label><input type="text" id="newCategory" placeholder="e.g. Vehicle Maintenance"></div>
+      <div class="field"><button class="btn red" id="addCategoryBtn">Add</button></div>
+    </div>
+    <div class="pill-list" id="categoryList"></div>
+  </div>
+  <div class="panel accent-green">
+    <h2>Listing platforms</h2>
+    <p class="hint" style="margin-top:-2px;">These show up as choices on the Listings tab.</p>
+    <div class="filter-row">
+      <div class="field"><label>Add platform</label><input type="text" id="newPlatform" placeholder="e.g. Swappa"></div>
+      <div class="field"><button class="btn green" id="addPlatformBtn">Add</button></div>
+    </div>
+    <div class="pill-list" id="platformList"></div>
+  </div>
+  <div class="panel accent-yellow">
+    <h2>Commission</h2>
+    <p class="hint" style="margin-top:-2px;">Optionally pay employees a commission on top of hourly wages. When set, it's automatically included whenever you calculate pay for a period.</p>
+    <div class="filter-row">
+      <div class="field">
+        <label>Commission type</label>
+        <select id="commissionMode">
+          <option value="none">No commission</option>
+          <option value="flatBuy">Flat $ per device bought</option>
+          <option value="percentProfit">% of profit per device sold</option>
+        </select>
+      </div>
+      <div class="field"><label>Rate</label><input type="number" step="0.01" id="commissionRate" value="0"></div>
+      <div class="field"><button class="btn amber" id="saveCommissionBtn">Save</button></div>
+    </div>
+  </div>
+  <div class="panel accent-teal">
+    <h2>Driver pickup form</h2>
+    <p class="hint" style="margin-top:-2px;">Send your driver a Google Form to fill out on every pickup. Paste the form's published Google Sheet CSV link below, then pull in new pickups whenever you want - they land in the Deal Log tagged "Driver" for you to review.</p>
+    <div class="form-grid">
+      <div class="field wide"><label>Published CSV link</label><input type="text" id="driverFormCsvUrl" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"></div>
+    </div>
+    <button class="btn secondary" id="saveDriverFormUrlBtn">Save link</button>
+    <button class="btn teal" id="importPickupsBtn" style="background:var(--teal);color:#fff;">Import new pickups now</button>
+    <div id="pickupImportStatus" class="hint" style="margin-top:10px;"></div>
+    <details class="field-group" style="margin-top:14px;">
+      <summary>Fetch blocked or offline? Paste the CSV manually instead</summary>
+      <div class="field wide"><label>Paste CSV content</label><textarea id="pickupCsvPaste" rows="4" placeholder="Paste the full contents of the published CSV here"></textarea></div>
+      <button class="btn secondary" id="importPastedCsvBtn">Import from pasted CSV</button>
+    </details>
+  </div>
+  <div class="panel">
+    <h2>Sync across devices (Google)</h2>
+    <div class="gcal-sync-panel">
+      <button class="btn secondary" id="gdriveConnectBtn">Connect Google Account</button>
+      <button class="btn" id="gdriveSyncBtn" style="display:none;">Sync data now</button>
+      <span class="gcal-sync-status" id="gdriveSyncStatus">Not connected.</span>
+    </div>
+    <div class="hint">Keeps this dashboard's data the same on every device where you're signed in and synced (uses a private file in your own Google Drive - not visible in your normal Drive folder). Whichever device has the newer changes wins when you sync, so sync right before switching devices to avoid losing edits. Same connection as the Google Calendar sync on the Pickup Calendar tab - you only need to connect once.</div>
+  </div>
+  <div class="panel">
+    <h2>Data and backups</h2>
+    <div id="backupStatus"></div>
+    <p style="font-size:13px;color:var(--text-muted);">Your data is saved automatically in this browser only. Export a backup regularly so you never lose it - especially before clearing browser data or switching computers.</p>
+    <button class="btn secondary" id="exportBtn">Export full backup (JSON)</button>
+    <button class="btn secondary" id="importBtn">Import backup</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none;">
+    <button class="btn danger" id="resetBtn">Reset all data</button>
+  </div>
+</div>
+
+</main>
+
+<div class="scan-modal" id="scanModal" style="display:none;">
+  <div class="scan-box">
+    <video id="scanVideo" playsinline muted></video>
+    <div class="scan-status" id="scanStatus">Point the camera at the barcode...</div>
+    <button class="btn secondary" id="scanCancelBtn">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = "phonePros_dashboard_v1";
+const GRADES = ["A","B","C","D"];
+const UNLOCKS = ["Unlocked","Locked","Carrier Locked","Unknown"];
+const DEFAULT_EXPENSE_CATEGORIES = ["Rent","Tools & Supplies","Insurance","Marketing","Software & Subscriptions","Vehicle Maintenance","Other"];
+const PALETTE = ["var(--blue)","var(--teal)","var(--green)","var(--yellow)","var(--red)","var(--baby-dark)"];
+const PALETTE_HEX = ["#2E7CD6","#12977A","#3B9B3F","#E8A415","#E0473F","#0E7C9E"];
+const IMEI_STATUSES = ["Not checked","Clean","Blacklisted","Financed (active)"];
+const DEFAULT_LISTING_PLATFORMS = ["eBay","Facebook Marketplace","OfferUp","Swappa","In-store","Other"];
+const LISTING_STATUSES = ["Active","Sold","Removed"];
+const PICKUP_STATUSES = ["Requested","Confirmed","Completed","Cancelled"];
+
+function cryptoId(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+
+function defaultData(){
+  return {
+    employees: ["Employee 1","Employee 2","Employee 3"],
+    leadSources: ["Facebook Marketplace","Craigslist","OfferUp","Referral","Walk-in","Instagram","Other"],
+    vehicles: ["Car 1"],
+    expenseCategories: DEFAULT_EXPENSE_CATEGORIES.slice(),
+    deals: [{
+      id: cryptoId(), date:"2026-01-15", time:"14:30", client:"John Smith", sellerPhone:"(555) 010-1234", buyLoc:"Downtown",
+      lead:"Facebook Marketplace", employee:"Employee 1", model:"iPhone 13 Pro", storage:"256GB",
+      unlock:"Unlocked", imei:"", imeiStatus:"Clean", grade:"B", buyPrice:450, otherCosts:0, sellPrice:650,
+      sellDate:"2026-01-20", buyer:"Sarah Buyer", saleLoc:"Online - eBay", notes:"Screen has minor scratch"
+    }],
+    hours: [{
+      id: cryptoId(), date:"2026-01-15", employee:"Employee 1", clockIn:"09:00", clockOut:"18:00",
+      breakHrs:0.5, notes:"Ran deal pickup at lunch"
+    }],
+    mileageLogs: [{
+      id: cryptoId(), date:"2026-01-15", employee:"Employee 1", vehicle:"Car 1",
+      startOdo:84190, endOdo:84213, personalMiles:0, gas:6.5, paidBy:"company", reimbursed:false, notes:"Pickup run downtown"
+    }],
+    payPeriods: [],
+    expenses: [],
+    sellerNotes: {},
+    buyerNotes: {},
+    listings: [],
+    listingPlatforms: DEFAULT_LISTING_PLATFORMS.slice(),
+    commissionMode: "none",
+    commissionRate: 0,
+    driverFormCsvUrl: "",
+    importedPickupTimestamps: [],
+    pickups: [],
+    lastBackupAt: null,
+    lastModified: null
+  };
+}
+
+function loadData(){
+  let d;
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) d = JSON.parse(raw);
+  }catch(e){}
+  if(!d) d = defaultData();
+  d.employees = d.employees || [];
+  d.leadSources = d.leadSources || [];
+  d.vehicles = d.vehicles || ["Car 1"];
+  d.expenseCategories = d.expenseCategories || DEFAULT_EXPENSE_CATEGORIES.slice();
+  d.deals = d.deals || [];
+  d.hours = d.hours || [];
+  d.mileageLogs = (d.mileageLogs || []).map(m=>{
+    if(m.personalMiles===undefined || m.personalMiles===null) m.personalMiles = 0;
+    if(m.paidBy===undefined) m.paidBy = "company";
+    if(m.reimbursed===undefined) m.reimbursed = false;
+    return m;
+  });
+  d.payPeriods = d.payPeriods || [];
+  d.expenses = d.expenses || [];
+  d.sellerNotes = d.sellerNotes || {};
+  d.buyerNotes = d.buyerNotes || {};
+  d.listings = d.listings || [];
+  d.listingPlatforms = d.listingPlatforms || DEFAULT_LISTING_PLATFORMS.slice();
+  d.commissionMode = d.commissionMode || "none";
+  if(d.commissionRate===undefined || d.commissionRate===null) d.commissionRate = 0;
+  if(d.driverFormCsvUrl===undefined) d.driverFormCsvUrl = "";
+  d.importedPickupTimestamps = d.importedPickupTimestamps || [];
+  d.pickups = d.pickups || [];
+  if(d.lastBackupAt===undefined) d.lastBackupAt = null;
+  saveData(d);
+  return d;
+}
+function saveData(d){ d.lastModified = new Date().toISOString(); localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); }
+
+let DATA = loadData();
+let dealSort = { key:"date", dir:"desc" };
+
+function fmtMoney(n){ return "$" + (Math.round((n||0)*100)/100).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtNum(n,d=1){ return (Math.round((n||0)*Math.pow(10,d))/Math.pow(10,d)).toLocaleString(); }
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(()=>t.classList.remove("show"), 2200);
+}
+function esc(s){ return (s===undefined||s===null) ? "" : String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+
+function colorFor(name, list){
+  const idx = (list||[]).indexOf(name);
+  if(idx>=0) return PALETTE_HEX[idx % PALETTE_HEX.length];
+  let h=0;
+  const s = String(name||"");
+  for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i))|0; }
+  return PALETTE_HEX[Math.abs(h) % PALETTE_HEX.length];
+}
+function employeeColor(name){ return colorFor(name, DATA.employees); }
+function vehicleColor(name){ return colorFor(name, DATA.vehicles); }
+function categoryColor(name){ return colorFor(name, DATA.expenseCategories); }
+function leadColor(name){ return colorFor(name, DATA.leadSources); }
+function platformColor(name){ return colorFor(name, DATA.listingPlatforms); }
+function colorBadge(name, color){
+  if(!name) return "-";
+  return `<span class="badge" style="background:${color}1A;color:${color};border:1px solid ${color}55;">${esc(name)}</span>`;
+}
+function employeeBadge(name){ return name ? colorBadge(name, employeeColor(name)) : "-"; }
+function vehicleBadge(name){ return name ? colorBadge(name, vehicleColor(name)) : "-"; }
+function categoryBadge(name){ return name ? colorBadge(name, categoryColor(name)) : "-"; }
+function unlockClass(status){
+  if(status==="Unlocked") return "unlock-unlocked";
+  if(status==="Locked") return "unlock-locked";
+  if(status==="Carrier Locked") return "unlock-carrier";
+  return "unlock-unknown";
+}
+function unlockBadge(status){ return status ? `<span class="badge ${unlockClass(status)}">${esc(status)}</span>` : "-"; }
+function imeiClass(status){
+  if(status==="Clean") return "imei-clean";
+  if(status==="Blacklisted") return "imei-blacklisted";
+  if(status==="Financed (active)") return "imei-financed";
+  return "imei-notchecked";
+}
+function imeiBadge(status){
+  const s = status || "Not checked";
+  return `<span class="badge ${imeiClass(s)}">${esc(s)}</span>`;
+}
+function listingClass(status){
+  if(status==="Sold") return "listing-sold";
+  if(status==="Removed") return "listing-removed";
+  return "listing-active";
+}
+function profitCell(p){
+  if(p===null||p===undefined) return "-";
+  return `<span class="${p>=0?"profit-pos":"profit-neg"}">${fmtMoney(p)}</span>`;
+}
+function otCell(n){
+  const v = fmtNum(n,2);
+  return n>0 ? `<span class="badge ot">${v}</span>` : v;
+}
+
+function dealOtherCosts(deal){ return parseFloat(deal.otherCosts)||0; }
+function dealProfit(deal){
+  if(!deal.sellPrice) return null;
+  return (parseFloat(deal.sellPrice)||0) - (parseFloat(deal.buyPrice)||0) - dealOtherCosts(deal);
+}
+function dealStatus(deal){ return deal.sellPrice ? "Sold" : "In Stock"; }
+
+function commissionForDeal(deal){
+  if(DATA.commissionMode==="flatBuy") return parseFloat(DATA.commissionRate)||0;
+  if(DATA.commissionMode==="percentProfit"){
+    if(dealStatus(deal)!=="Sold") return 0;
+    return (dealProfit(deal)||0) * ((parseFloat(DATA.commissionRate)||0)/100);
+  }
+  return 0;
+}
+function commissionDateFor(deal){
+  return DATA.commissionMode==="percentProfit" ? deal.sellDate : deal.date;
+}
+function employeeCommissionInRange(emp, from, to){
+  return DATA.deals.filter(d=>{
+    if(d.employee!==emp) return false;
+    if(DATA.commissionMode==="percentProfit" && dealStatus(d)!=="Sold") return false;
+    const dt = commissionDateFor(d);
+    if(!dt) return false;
+    if(from && dt<from) return false;
+    if(to && dt>to) return false;
+    return true;
+  }).reduce((s,d)=>s+commissionForDeal(d),0);
+}
+
+function normalizePhone(phone){ return (phone||"").replace(/\D/g,""); }
+function normalizeName(name){ return (name||"").trim().toLowerCase().replace(/\s+/g," "); }
+function sellerKey(deal){
+  const phone = normalizePhone(deal.sellerPhone);
+  if(phone.length>=7) return "p:"+phone;
+  return "n:"+normalizeName(deal.client);
+}
+function aggregateSellers(deals){
+  const groups = {};
+  deals.forEach(d=>{
+    if(!d.client && !d.sellerPhone) return;
+    const key = sellerKey(d);
+    if(!groups[key]) groups[key] = { key, deals:[] };
+    groups[key].deals.push(d);
+  });
+  return Object.values(groups).map(g=>{
+    const sorted = g.deals.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+    const last = sorted[sorted.length-1];
+    const totalSpent = g.deals.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0),0);
+    const profitFromSeller = g.deals.reduce((s,d)=>s+(dealProfit(d)||0),0);
+    return {
+      key: g.key,
+      name: (last.client||"").trim() || "(no name)",
+      phone: g.deals.map(d=>d.sellerPhone).filter(Boolean).slice(-1)[0] || "",
+      count: g.deals.length,
+      totalSpent,
+      profitFromSeller,
+      avgBuy: totalSpent/g.deals.length,
+      firstDate: sorted[0].date || "",
+      lastDate: last.date || "",
+      devices: g.deals.map(d=>d.model).filter(Boolean),
+    };
+  });
+}
+
+function buyerKey(deal){ return "b:"+normalizeName(deal.buyer); }
+function aggregateBuyers(deals){
+  const groups = {};
+  deals.forEach(d=>{
+    if(dealStatus(d)!=="Sold" || !d.buyer) return;
+    const key = buyerKey(d);
+    if(!groups[key]) groups[key] = { key, deals:[] };
+    groups[key].deals.push(d);
+  });
+  return Object.values(groups).map(g=>{
+    const dateOf = d=>d.sellDate||d.date||"";
+    const sorted = g.deals.slice().sort((a,b)=>dateOf(a).localeCompare(dateOf(b)));
+    const last = sorted[sorted.length-1];
+    const totalRevenue = g.deals.reduce((s,d)=>s+(parseFloat(d.sellPrice)||0),0);
+    const locCounts = {};
+    g.deals.forEach(d=>{ if(d.saleLoc) locCounts[d.saleLoc]=(locCounts[d.saleLoc]||0)+1; });
+    const commonLoc = Object.entries(locCounts).sort((a,b)=>b[1]-a[1])[0];
+    return {
+      key: g.key,
+      name: (last.buyer||"").trim() || "(no name)",
+      count: g.deals.length,
+      totalRevenue,
+      avgSell: totalRevenue/g.deals.length,
+      commonLocation: commonLoc ? commonLoc[0] : "",
+      firstDate: dateOf(sorted[0]),
+      lastDate: dateOf(last),
+    };
+  });
+}
+
+function daysSince(dateStr){
+  if(!dateStr) return null;
+  const parts = dateStr.split("-").map(Number);
+  if(parts.length!==3 || parts.some(isNaN)) return null;
+  const [y,m,d] = parts;
+  const buy = Date.UTC(y,m-1,d);
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor((today-buy)/86400000);
+}
+function agingInfo(deal){
+  if(dealStatus(deal)==="Sold") return null;
+  const days = daysSince(deal.date);
+  if(days===null) return null;
+  let level = "fresh";
+  if(days>=30) level="stale";
+  else if(days>=14) level="watch";
+  return {days, level};
+}
+
+function dailyMiles(entry){
+  if(entry.startOdo===undefined || entry.startOdo===null || entry.startOdo==="") return null;
+  if(entry.endOdo===undefined || entry.endOdo===null || entry.endOdo==="") return null;
+  const miles = parseFloat(entry.endOdo) - parseFloat(entry.startOdo);
+  return Math.round(miles*10)/10;
+}
+
+function hoursWorked(h){
+  if(!h.clockIn || !h.clockOut) return 0;
+  const [ih,im] = h.clockIn.split(":").map(Number);
+  const [oh,om] = h.clockOut.split(":").map(Number);
+  let hrs = (oh + om/60) - (ih + im/60);
+  if(hrs < 0) hrs += 24;
+  hrs -= (parseFloat(h.breakHrs)||0);
+  return Math.max(0, Math.round(hrs*100)/100);
+}
+function overtimeHours(h){
+  const worked = hoursWorked(h);
+  return Math.max(0, Math.round((worked-8)*100)/100);
+}
+
+function monthKey(dateStr){ return dateStr ? dateStr.slice(0,7) : null; }
+function last6MonthKeys(){
+  const out = [];
+  const now = new Date();
+  for(let i=5;i>=0;i--){
+    const d = new Date(Date.UTC(now.getFullYear(), now.getMonth()-i, 1));
+    const key = d.getUTCFullYear()+"-"+String(d.getUTCMonth()+1).padStart(2,"0");
+    const label = d.toLocaleDateString(undefined,{month:"short",timeZone:"UTC"});
+    out.push({key,label});
+  }
+  return out;
+}
+
+function daysBetweenNowAnd(iso){
+  if(!iso) return null;
+  return Math.floor((Date.now() - new Date(iso).getTime())/86400000);
+}
+
+function toCSV(headers, rows){
+  const cell = v => '"' + String(v===undefined||v===null?"":v).replace(/"/g,'""') + '"';
+  const lines = [headers.map(h=>cell(h.label)).join(",")];
+  rows.forEach(r=>{ lines.push(headers.map(h=>cell(h.get(r))).join(",")); });
+  return lines.join("\r\n");
+}
+function downloadText(filename, text, mime){
+  const blob = new Blob([text], {type:mime});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function parseCSV(text){
+  const rows = [];
+  let i=0, field="", row=[], inQuotes=false;
+  const pushField=()=>{ row.push(field); field=""; };
+  const pushRow=()=>{ pushField(); rows.push(row); row=[]; };
+  while(i<text.length){
+    const c = text[i];
+    if(inQuotes){
+      if(c==='"'){
+        if(text[i+1]==='"'){ field+='"'; i+=2; continue; }
+        inQuotes=false; i++; continue;
+      }
+      field+=c; i++; continue;
+    }else{
+      if(c==='"'){ inQuotes=true; i++; continue; }
+      if(c===','){ pushField(); i++; continue; }
+      if(c==='\r'){ i++; continue; }
+      if(c==='\n'){ pushRow(); i++; continue; }
+      field+=c; i++; continue;
+    }
+  }
+  if(field.length || row.length) pushRow();
+  if(!rows.length) return [];
+  const headers = rows[0].map(h=>h.trim());
+  return rows.slice(1).filter(r=>r.some(c=>(c||"").trim()!=="")).map(r=>{
+    const obj = {};
+    headers.forEach((h,idx)=>{ obj[h] = (r[idx]!==undefined?r[idx]:"").trim(); });
+    return obj;
+  });
+}
+
+function normalizeFormDate(raw){
+  if(!raw) return "";
+  raw = raw.trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  const m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m){
+    const [, mo, da, yr] = m;
+    return `${yr}-${mo.padStart(2,"0")}-${da.padStart(2,"0")}`;
+  }
+  return raw;
+}
+function normalizeFormTime(raw){
+  if(!raw) return "";
+  raw = raw.trim();
+  const ampm = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])$/);
+  if(ampm){
+    let h = parseInt(ampm[1],10);
+    const mnt = ampm[2];
+    const suffix = ampm[3].toUpperCase();
+    if(suffix==="PM" && h!==12) h+=12;
+    if(suffix==="AM" && h===12) h=0;
+    return String(h).padStart(2,"0")+":"+mnt;
+  }
+  const h24 = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if(h24) return h24[1].padStart(2,"0")+":"+h24[2];
+  return "";
+}
+
+function importPickupsFromCsvText(text){
+  let rows;
+  try{ rows = parseCSV(text); }catch(e){ return {imported:0, skipped:0, dateWarnings:0, error:"Could not read that CSV."}; }
+  if(!rows.length) return {imported:0, skipped:0, dateWarnings:0, error:"No rows found in that CSV."};
+  let imported=0, skipped=0, dateWarnings=0;
+  rows.forEach(r=>{
+    const ts = r["Timestamp"] || "";
+    if(ts && DATA.importedPickupTimestamps.includes(ts)){ skipped++; return; }
+    const dateRaw = r["Pickup date"] || "";
+    const date = normalizeFormDate(dateRaw);
+    const validDate = /^\d{4}-\d{2}-\d{2}$/.test(date);
+    if(dateRaw && !validDate) dateWarnings++;
+    const deal = {
+      id: cryptoId(),
+      date: validDate ? date : todayISO(),
+      time: normalizeFormTime(r["Pickup time"]||""),
+      client: r["Seller name"]||"",
+      sellerPhone: r["Seller phone"]||"",
+      buyLoc: r["Pickup location"]||"",
+      lead: r["Lead source"]||"",
+      employee: r["Driver / employee"]||"",
+      model: r["Device model"]||"",
+      storage: r["Storage"]||"",
+      unlock: r["Unlock status"]||"",
+      imei: r["IMEI or serial number"]||"",
+      imeiStatus: "Not checked",
+      grade: r["Grade"]||"",
+      buyPrice: parseFloat(r["Price paid"])||0,
+      otherCosts: parseFloat(r["Other costs"])||0,
+      sellPrice: null, sellDate: "", buyer: "", saleLoc: "",
+      notes: (r["Notes"]||"") + (dateRaw && !validDate ? ` (original pickup date from form: ${dateRaw})` : ""),
+      source: "driver-form",
+    };
+    DATA.deals.push(deal);
+    if(ts) DATA.importedPickupTimestamps.push(ts);
+    imported++;
+  });
+  saveData(DATA);
+  return {imported, skipped, dateWarnings};
+}
+
+function populateSelect(sel, values, includeBlank, blankLabel){
+  sel.innerHTML = "";
+  if(includeBlank){
+    const o = document.createElement("option");
+    o.value=""; o.textContent = blankLabel || "All";
+    sel.appendChild(o);
+  }
+  values.forEach(v=>{
+    const o = document.createElement("option");
+    o.value=v; o.textContent=v;
+    sel.appendChild(o);
+  });
+}
+
+function refreshAllDropdowns(){
+  populateSelect(document.getElementById("f-employee"), DATA.employees, true, "All");
+  populateSelect(document.getElementById("f-grade"), GRADES, true, "All");
+  populateSelect(document.getElementById("f-lead"), DATA.leadSources, true, "All");
+
+  populateSelect(document.getElementById("deal-lead"), DATA.leadSources, false);
+  populateSelect(document.getElementById("deal-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("deal-unlock"), UNLOCKS, false);
+  populateSelect(document.getElementById("deal-imeistatus"), IMEI_STATUSES, false);
+  populateSelect(document.getElementById("deal-grade"), GRADES, false);
+
+  populateSelect(document.getElementById("hours-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("pay-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("expense-category"), DATA.expenseCategories, false);
+  populateSelect(document.getElementById("mileage-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("mileage-vehicle"), DATA.vehicles, false);
+  populateSelect(document.getElementById("mstart-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("mstart-vehicle"), DATA.vehicles, false);
+  populateSelect(document.getElementById("listing-platform"), DATA.listingPlatforms, false);
+  populateSelect(document.getElementById("pg-grade"), GRADES, true, "All grades");
+  populateSelect(document.getElementById("pickup-driver"), DATA.employees, false);
+  refreshListingDealOptions();
+}
+
+function refreshListingDealOptions(){
+  const sel = document.getElementById("listing-deal");
+  if(!sel) return;
+  const current = sel.value;
+  sel.innerHTML = "";
+  DATA.deals.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).forEach(d=>{
+    const o = document.createElement("option");
+    o.value = d.id;
+    o.textContent = `${d.date||"?"} - ${d.client||"?"} - ${d.model||"?"} (${dealStatus(d)})`;
+    sel.appendChild(o);
+  });
+  if(current) sel.value = current;
+}
+
+function pickupStatusClass(status){
+  if(status==="Confirmed") return "pickup-confirmed";
+  if(status==="Completed") return "pickup-completed";
+  if(status==="Cancelled") return "pickup-cancelled";
+  return "pickup-requested";
+}
+function pickupStatusBadge(status){
+  const s = status || "Requested";
+  return `<span class="badge ${pickupStatusClass(s)}">${esc(s)}</span>`;
+}
+function pickupDateTimeKey(p){ return (p.date||"") + " " + (p.time||"00:00"); }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function isoFromYMD(y,m,d){ return y + "-" + pad2(m+1) + "-" + pad2(d); }
+function pickupsOnDate(iso){ return DATA.pickups.filter(p=>p.date===iso); }
+
+const _calNow = new Date();
+let calYear = _calNow.getFullYear();
+let calMonth = _calNow.getMonth();
+let calSelectedDate = null;
+
+function renderCalendarKpis(){
+  const today = todayISO();
+  const in7d = new Date();
+  in7d.setDate(in7d.getDate()+7);
+  const in7 = isoFromYMD(in7d.getFullYear(), in7d.getMonth(), in7d.getDate());
+  const todays = DATA.pickups.filter(p=>p.date===today && p.status!=="Cancelled").length;
+  const upcoming7 = DATA.pickups.filter(p=>p.date && p.date>=today && p.date<=in7 && p.status!=="Cancelled").length;
+  const unconfirmed = DATA.pickups.filter(p=>p.status==="Requested").length;
+  const overdue = DATA.pickups.filter(p=>p.date && p.date<today && (p.status==="Requested"||p.status==="Confirmed")).length;
+  const monthKeyNow = today.slice(0,7);
+  const completedThisMonth = DATA.pickups.filter(p=>p.status==="Completed" && monthKey(p.date)===monthKeyNow).length;
+
+  const kpis = [
+    ["Today's pickups", todays, "teal"],
+    ["Next 7 days", upcoming7, "blue"],
+    ["Unconfirmed requests", unconfirmed, unconfirmed>0?"yellow":"green"],
+    ["Overdue / needs follow-up", overdue, overdue>0?"red":"green"],
+    ["Completed this month", completedThisMonth, "green"],
+  ];
+  document.getElementById("calendarKpiGrid").innerHTML = kpis.map(([label,val,color])=>`
+    <div class="kpi c-${color}"><div class="label">${label}</div><div class="value">${val}</div></div>
+  `).join("");
+}
+
+function renderCalendarGrid(){
+  const first = new Date(calYear, calMonth, 1);
+  const startWeekday = first.getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const daysInPrevMonth = new Date(calYear, calMonth, 0).getDate();
+  const today = todayISO();
+
+  const cells = [];
+  for(let i=0;i<startWeekday;i++){
+    const d = daysInPrevMonth - startWeekday + 1 + i;
+    const pm = calMonth===0?11:calMonth-1;
+    const py = calMonth===0?calYear-1:calYear;
+    cells.push({iso: isoFromYMD(py,pm,d), day:d, otherMonth:true});
+  }
+  for(let d=1; d<=daysInMonth; d++){
+    cells.push({iso: isoFromYMD(calYear,calMonth,d), day:d, otherMonth:false});
+  }
+  let nextDay = 1;
+  while(cells.length % 7 !== 0){
+    const nm = calMonth===11?0:calMonth+1;
+    const ny = calMonth===11?calYear+1:calYear;
+    cells.push({iso: isoFromYMD(ny,nm,nextDay), day:nextDay, otherMonth:true});
+    nextDay++;
+  }
+
+  const dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  let html = dow.map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  html += cells.map(c=>{
+    const pickups = pickupsOnDate(c.iso);
+    const classes = ["cal-day"];
+    if(c.otherMonth) classes.push("other-month");
+    if(c.iso===today) classes.push("today");
+    if(c.iso===calSelectedDate) classes.push("selected");
+    const dotsShown = pickups.slice(0,4);
+    const dotsHtml = dotsShown.map(p=>{
+      const color = p.status==="Confirmed"?"var(--blue)":p.status==="Completed"?"var(--green)":p.status==="Cancelled"?"#B7C0C9":"var(--yellow)";
+      return `<span class="dot" style="background:${color};" title="${esc(p.time||'')} ${esc(p.seller||'')}"></span>`;
+    }).join("");
+    const moreHtml = pickups.length>4 ? `<span class="more">+${pickups.length-4}</span>` : "";
+    return `<div class="${classes.join(' ')}" onclick="selectCalDay('${c.iso}')">
+      <div class="day-num">${c.day}</div>
+      <div class="dots">${dotsHtml}${moreHtml}</div>
+    </div>`;
+  }).join("");
+
+  document.getElementById("calGrid").innerHTML = html;
+  document.getElementById("calMonthLabel").textContent = new Date(calYear, calMonth, 1).toLocaleDateString(undefined,{month:"long",year:"numeric"});
+}
+
+function renderPickupAgenda(){
+  const today = todayISO();
+  const titleEl = document.getElementById("pickupAgendaTitle");
+  const showAllBtn = document.getElementById("calShowAllBtn");
+  let list;
+  if(calSelectedDate){
+    list = pickupsOnDate(calSelectedDate).slice().sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+    const label = new Date(calSelectedDate+"T00:00:00").toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+    titleEl.textContent = `Pickups on ${label}`;
+    showAllBtn.style.display = "inline-block";
+  }else{
+    list = DATA.pickups.filter(p=>p.date && p.date>=today && p.status!=="Cancelled")
+      .slice().sort((a,b)=>pickupDateTimeKey(a).localeCompare(pickupDateTimeKey(b)));
+    titleEl.textContent = "Upcoming pickups";
+    showAllBtn.style.display = "none";
+  }
+
+  const overdue = DATA.pickups.filter(p=>p.date && p.date<today && (p.status==="Requested"||p.status==="Confirmed"));
+
+  let html = "";
+  if(overdue.length && !calSelectedDate){
+    html += `<div class="hint" style="color:var(--red-dark);font-weight:600;margin-bottom:6px;">${overdue.length} pickup${overdue.length===1?"":"s"} overdue - never marked completed or cancelled</div>`;
+  }
+  if(!list.length){
+    html += `<div class="empty-msg">${calSelectedDate?"No pickups scheduled this day.":"No upcoming pickups scheduled."}</div>`;
+  }else{
+    html += list.map(p=>{
+      const isOverdue = p.date && p.date<today && (p.status==="Requested"||p.status==="Confirmed");
+      return `<div class="pickup-row ${isOverdue?'overdue':''}">
+        <span class="when">${esc(p.date)||""} ${esc(p.time)||""}</span>
+        <span class="info"><b>${esc(p.seller)||"(no name)"}</b> ${p.model?"- "+esc(p.model):""} ${p.location?"@ "+esc(p.location):""}${p.phone?" - "+esc(p.phone):""}</span>
+        ${p.driver?employeeBadge(p.driver):""}
+        ${pickupStatusBadge(p.status)}
+        <span class="actions-cell">
+          ${p.status!=="Confirmed"&&p.status!=="Completed"&&p.status!=="Cancelled"?`<button class="icon-btn" onclick="setPickupStatus('${p.id}','Confirmed')">Confirm</button>`:""}
+          ${p.status!=="Completed"&&p.status!=="Cancelled"?`<button class="icon-btn" onclick="setPickupStatus('${p.id}','Completed')">Complete</button>`:""}
+          <button class="icon-btn" onclick="editPickup('${p.id}')">Edit</button>
+          <button class="icon-btn del" onclick="deletePickup('${p.id}')">Delete</button>
+        </span>
+      </div>`;
+    }).join("");
+  }
+  document.getElementById("pickupAgenda").innerHTML = html;
+}
+
+function renderCalendar(){
+  renderCalendarKpis();
+  renderCalendarGrid();
+  renderPickupAgenda();
+}
+
+function clearPickupForm(){
+  ["pickup-date","pickup-time","pickup-seller","pickup-phone","pickup-model","pickup-location","pickup-notes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("pickup-id").value="";
+  document.getElementById("pickup-date").value = todayISO();
+  document.getElementById("pickup-driver").selectedIndex = 0;
+  document.getElementById("pickup-status").value = "Requested";
+  document.getElementById("pickupFormTitle").textContent = "Schedule a pickup";
+  document.getElementById("cancelPickupBtn").style.display = "none";
+}
+
+document.getElementById("savePickupBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("pickup-id").value;
+  const existing = id ? DATA.pickups.find(x=>x.id===id) : null;
+  const p = {
+    id: id || cryptoId(),
+    date: document.getElementById("pickup-date").value,
+    time: document.getElementById("pickup-time").value,
+    seller: document.getElementById("pickup-seller").value,
+    phone: document.getElementById("pickup-phone").value,
+    model: document.getElementById("pickup-model").value,
+    location: document.getElementById("pickup-location").value,
+    driver: document.getElementById("pickup-driver").value,
+    status: document.getElementById("pickup-status").value || "Requested",
+    notes: document.getElementById("pickup-notes").value,
+    createdAt: (existing && existing.createdAt) || new Date().toISOString(),
+    gcalEventId: (existing && existing.gcalEventId) || null,
+  };
+  if(!p.date || !p.time || !p.seller){ showToast("Date, time, and seller name are required"); return; }
+  if(id){
+    const idx = DATA.pickups.findIndex(x=>x.id===id);
+    if(idx>=0) DATA.pickups[idx]=p;
+  }else{
+    DATA.pickups.push(p);
+  }
+  saveData(DATA);
+  clearPickupForm();
+  renderCalendar();
+  showToast("Pickup saved");
+});
+document.getElementById("cancelPickupBtn").addEventListener("click", clearPickupForm);
+document.querySelector('#view-calendar .panel.accent-teal').addEventListener("keydown", e=>{
+  if(e.key==="Enter" && e.target.tagName!=="TEXTAREA"){
+    e.preventDefault();
+    document.getElementById("savePickupBtn").click();
+  }
+});
+
+window.editPickup = function(id){
+  const p = DATA.pickups.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById("pickup-id").value=p.id;
+  document.getElementById("pickup-date").value=p.date||"";
+  document.getElementById("pickup-time").value=p.time||"";
+  document.getElementById("pickup-seller").value=p.seller||"";
+  document.getElementById("pickup-phone").value=p.phone||"";
+  document.getElementById("pickup-model").value=p.model||"";
+  document.getElementById("pickup-location").value=p.location||"";
+  document.getElementById("pickup-driver").value=p.driver||"";
+  document.getElementById("pickup-status").value=p.status||"Requested";
+  document.getElementById("pickup-notes").value=p.notes||"";
+  document.getElementById("pickupFormTitle").textContent="Edit pickup";
+  document.getElementById("cancelPickupBtn").style.display="inline-block";
+  document.querySelector('nav button[data-view="calendar"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+window.deletePickup = function(id){
+  if(!confirm("Delete this scheduled pickup?")) return;
+  DATA.pickups = DATA.pickups.filter(p=>p.id!==id);
+  saveData(DATA);
+  renderCalendar();
+  showToast("Pickup deleted");
+};
+window.setPickupStatus = function(id, status){
+  const p = DATA.pickups.find(x=>x.id===id);
+  if(!p) return;
+  p.status = status;
+  saveData(DATA);
+  renderCalendar();
+  showToast("Marked "+status);
+};
+window.selectCalDay = function(iso){
+  calSelectedDate = (calSelectedDate===iso) ? null : iso;
+  renderCalendarGrid();
+  renderPickupAgenda();
+};
+
+document.getElementById("calPrevBtn").addEventListener("click", ()=>{
+  calMonth--; if(calMonth<0){calMonth=11; calYear--;}
+  renderCalendarGrid();
+});
+document.getElementById("calNextBtn").addEventListener("click", ()=>{
+  calMonth++; if(calMonth>11){calMonth=0; calYear++;}
+  renderCalendarGrid();
+});
+document.getElementById("calTodayBtn").addEventListener("click", ()=>{
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth();
+  calSelectedDate = todayISO();
+  renderCalendar();
+});
+document.getElementById("calShowAllBtn").addEventListener("click", ()=>{
+  calSelectedDate = null;
+  renderCalendarGrid();
+  renderPickupAgenda();
+});
+
+document.getElementById("exportPickupsCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Date", get:p=>p.date}, {label:"Time", get:p=>p.time}, {label:"Seller", get:p=>p.seller},
+    {label:"Phone", get:p=>p.phone}, {label:"Device model", get:p=>p.model}, {label:"Location", get:p=>p.location},
+    {label:"Driver", get:p=>p.driver}, {label:"Status", get:p=>p.status}, {label:"Notes", get:p=>p.notes},
+  ];
+  downloadText(`phone-pros-pickups-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.pickups), "text/csv");
+});
+
+// ---- Google Calendar sync (pulls bookings from the "Phone Pros Pickup" booking page) ----
+const GCAL_CLIENT_ID = "975538711754-3juuh7ahq8j4t4au8vfb6crid08nq2to.apps.googleusercontent.com";
+const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata";
+let gcalAccessToken = null;
+let gcalTokenExpiry = 0;
+let gcalTokenClient = null;
+
+function gcalSetStatus(text, cls){
+  const el = document.getElementById("gcalSyncStatus");
+  if(!el) return;
+  el.textContent = text;
+  el.className = "gcal-sync-status" + (cls ? " "+cls : "");
+}
+
+function gcalInitTokenClient(){
+  if(gcalTokenClient) return gcalTokenClient;
+  if(typeof google === "undefined" || !google.accounts || !google.accounts.oauth2) return null;
+  gcalTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GCAL_CLIENT_ID,
+    scope: GCAL_SCOPE,
+    callback: (resp)=>{
+      if(!resp || resp.error){
+        gcalSetStatus("Connection failed" + (resp && resp.error ? ": "+resp.error : "") + ".", "err");
+        return;
+      }
+      gcalAccessToken = resp.access_token;
+      gcalTokenExpiry = Date.now() + ((resp.expires_in||3300)*1000) - 60000;
+      document.getElementById("gcalSyncBtn").style.display = "inline-block";
+      document.getElementById("gcalConnectBtn").textContent = "Reconnect Google Account";
+      const gdriveBtn = document.getElementById("gdriveConnectBtn");
+      if(gdriveBtn) gdriveBtn.textContent = "Reconnect Google Account";
+      document.getElementById("gdriveSyncBtn") && (document.getElementById("gdriveSyncBtn").style.display = "inline-block");
+      gdriveSetStatus("Connected.", "ok");
+      gcalSetStatus("Connected. Syncing...", "ok");
+      gcalDoSync();
+    },
+  });
+  return gcalTokenClient;
+}
+
+document.getElementById("gcalConnectBtn").addEventListener("click", ()=>{
+  if(typeof google === "undefined" || !google.accounts){
+    gcalSetStatus("Google sign-in script hasn't loaded yet - check your internet connection and reload the page.", "err");
+    return;
+  }
+  const client = gcalInitTokenClient();
+  if(!client){ gcalSetStatus("Couldn't start Google sign-in. Reload and try again.", "err"); return; }
+  client.requestAccessToken({ prompt: gcalAccessToken ? "" : "consent" });
+});
+
+document.getElementById("gcalSyncBtn").addEventListener("click", ()=>{
+  if(!gcalAccessToken || Date.now() > gcalTokenExpiry){
+    const client = gcalInitTokenClient();
+    if(!client){ gcalSetStatus("Couldn't reconnect. Click Connect Google Account.", "err"); return; }
+    client.requestAccessToken({ prompt: "" });
+    return;
+  }
+  gcalDoSync();
+});
+
+function gcalParseDescription(desc){
+  // Google Calendar lists appointment booking-form answers as "Label" / "Value"
+  // lines in the event description. This is a best-effort parse - the full raw
+  // description is always kept in the pickup's notes so nothing is ever lost.
+  const out = {};
+  if(!desc) return out;
+  const plain = desc.replace(/<br\s*\/?>/gi, "\n").replace(/<[^>]+>/g, "");
+  const lines = plain.split("\n").map(l=>l.trim()).filter(Boolean);
+  for(let i=0;i<lines.length-1;i++){
+    const label = lines[i].toLowerCase();
+    const value = lines[i+1];
+    if(label.startsWith("first name")) out.firstName = value;
+    else if(label.startsWith("last name")) out.lastName = value;
+    else if(label.startsWith("phone")) out.phone = value;
+    else if(label.startsWith("pickup address") || label.startsWith("address")) out.addressModel = value;
+  }
+  if(!out.phone){
+    const phoneMatch = plain.match(/(\+?1?[\s.-]?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})/);
+    if(phoneMatch) out.phone = phoneMatch[1].trim();
+  }
+  return out;
+}
+
+async function gcalDoSync(){
+  gcalSetStatus("Syncing...", "");
+  try{
+    const timeMin = new Date(); timeMin.setDate(timeMin.getDate()-1);
+    const timeMax = new Date(); timeMax.setDate(timeMax.getDate()+120);
+    const url = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
+      + "?timeMin=" + encodeURIComponent(timeMin.toISOString())
+      + "&timeMax=" + encodeURIComponent(timeMax.toISOString())
+      + "&singleEvents=true&orderBy=startTime&maxResults=250";
+    const res = await fetch(url, { headers: { Authorization: "Bearer " + gcalAccessToken } });
+    if(res.status===401){
+      gcalAccessToken = null;
+      gcalSetStatus("Session expired. Click Connect Google Account again.", "err");
+      return;
+    }
+    if(!res.ok){ gcalSetStatus("Sync failed (HTTP "+res.status+").", "err"); return; }
+    const data = await res.json();
+    const events = (data.items||[]).filter(ev =>
+      ev.status !== "cancelled" &&
+      ev.summary && ev.summary.toLowerCase().includes("phone pros pickup")
+    );
+    let added = 0;
+    events.forEach(ev=>{
+      if(DATA.pickups.some(p=>p.gcalEventId===ev.id)) return;
+      const parsed = gcalParseDescription(ev.description||"");
+      const attendee = (ev.attendees||[]).find(a=>!a.organizer);
+      const startDate = ev.start && (ev.start.date || (ev.start.dateTime||"").slice(0,10));
+      const startTime = ev.start && ev.start.dateTime ? new Date(ev.start.dateTime).toTimeString().slice(0,5) : "";
+      const seller = [parsed.firstName, parsed.lastName].filter(Boolean).join(" ")
+        || (attendee && attendee.displayName) || (attendee && attendee.email) || "";
+      DATA.pickups.push({
+        id: cryptoId(),
+        date: startDate || "",
+        time: startTime || "",
+        seller: seller,
+        phone: parsed.phone || "",
+        model: "",
+        location: parsed.addressModel || "",
+        driver: "",
+        status: "Requested",
+        notes: ev.description ? ev.description.replace(/<[^>]+>/g,"") : "",
+        createdAt: new Date().toISOString(),
+        gcalEventId: ev.id,
+      });
+      added++;
+    });
+    if(added>0){ saveData(DATA); renderCalendar(); renderDashboard(); }
+    gcalSetStatus("Synced " + new Date().toLocaleTimeString() + " - " + added + " new pickup" + (added===1?"":"s") + " added.", "ok");
+  }catch(err){
+    gcalSetStatus("Sync error: " + err.message, "err");
+  }
+}
+
+// ---- Google Drive cross-device data sync (keeps DATA the same across devices) ----
+const GDRIVE_FILE_NAME = "phone-pros-dashboard-data.json";
+let gdriveFileId = localStorage.getItem("phonePros_gdriveFileId") || null;
+
+function gdriveSetStatus(text, cls){
+  const el = document.getElementById("gdriveSyncStatus");
+  if(!el) return;
+  el.textContent = text;
+  el.className = "gcal-sync-status" + (cls ? " "+cls : "");
+}
+
+function gdriveEnsureConnected(onReady){
+  if(gcalAccessToken && Date.now() < gcalTokenExpiry){ onReady(); return; }
+  const client = gcalInitTokenClient();
+  if(!client){
+    gdriveSetStatus("Google sign-in script hasn't loaded yet - check your internet connection and reload the page.", "err");
+    return;
+  }
+  // Request a fresh token with its own callback so this specific caller gets
+  // notified when it's ready, without disturbing the shared gcalTokenClient's flow.
+  google.accounts.oauth2.initTokenClient({
+    client_id: GCAL_CLIENT_ID,
+    scope: GCAL_SCOPE,
+    callback: (resp)=>{
+      if(!resp || resp.error){
+        gdriveSetStatus("Connection failed" + (resp && resp.error ? ": "+resp.error : "") + ".", "err");
+        return;
+      }
+      gcalAccessToken = resp.access_token;
+      gcalTokenExpiry = Date.now() + ((resp.expires_in||3300)*1000) - 60000;
+      document.getElementById("gcalSyncBtn").style.display = "inline-block";
+      document.getElementById("gcalConnectBtn").textContent = "Reconnect Google Account";
+      const gdriveBtn = document.getElementById("gdriveConnectBtn");
+      if(gdriveBtn) gdriveBtn.textContent = "Reconnect Google Account";
+      document.getElementById("gdriveSyncBtn") && (document.getElementById("gdriveSyncBtn").style.display = "inline-block");
+      gcalSetStatus("Connected.", "ok");
+      onReady();
+    },
+  }).requestAccessToken({ prompt: gcalAccessToken ? "" : "consent" });
+}
+
+async function driveFindFileId(){
+  if(gdriveFileId) return gdriveFileId;
+  const url = "https://www.googleapis.com/drive/v3/files"
+    + "?spaces=appDataFolder&q=" + encodeURIComponent(`name='${GDRIVE_FILE_NAME}'`)
+    + "&fields=" + encodeURIComponent("files(id)");
+  const res = await fetch(url, { headers: { Authorization: "Bearer " + gcalAccessToken } });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const data = await res.json();
+  if(data.files && data.files.length){
+    gdriveFileId = data.files[0].id;
+    localStorage.setItem("phonePros_gdriveFileId", gdriveFileId);
+  }
+  return gdriveFileId;
+}
+
+async function driveDownloadFile(fileId){
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {
+    headers: { Authorization: "Bearer " + gcalAccessToken },
+  });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  return res.json();
+}
+
+async function driveUploadFile(fileId, jsonText){
+  const metadata = fileId ? {} : { name: GDRIVE_FILE_NAME, parents: ["appDataFolder"] };
+  const boundary = "phoneprosboundary";
+  const body =
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n`
+    + `--${boundary}\r\nContent-Type: application/json\r\n\r\n${jsonText}\r\n`
+    + `--${boundary}--`;
+  const url = fileId
+    ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
+    : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+  const res = await fetch(url, {
+    method: fileId ? "PATCH" : "POST",
+    headers: {
+      Authorization: "Bearer " + gcalAccessToken,
+      "Content-Type": `multipart/related; boundary=${boundary}`,
+    },
+    body,
+  });
+  if(!res.ok) throw new Error("HTTP "+res.status);
+  const data = await res.json();
+  if(!fileId && data.id){
+    gdriveFileId = data.id;
+    localStorage.setItem("phonePros_gdriveFileId", gdriveFileId);
+  }
+}
+
+async function gdriveDoSync(){
+  gdriveSetStatus("Syncing...", "");
+  try{
+    const fileId = await driveFindFileId();
+    if(!fileId){
+      await driveUploadFile(null, JSON.stringify(DATA));
+      gdriveSetStatus("First sync - pushed this device's data to the cloud at " + new Date().toLocaleTimeString() + ".", "ok");
+      return;
+    }
+    const cloud = await driveDownloadFile(fileId);
+    const cloudTime = cloud && cloud.lastModified ? new Date(cloud.lastModified).getTime() : 0;
+    const localTime = DATA.lastModified ? new Date(DATA.lastModified).getTime() : 0;
+    if(cloudTime > localTime){
+      applyImportedData(cloud);
+      saveData(DATA);
+      refreshAllDropdowns();
+      renderAll();
+      gdriveSetStatus("Synced " + new Date().toLocaleTimeString() + " - pulled newer data from another device.", "ok");
+    }else{
+      await driveUploadFile(fileId, JSON.stringify(DATA));
+      gdriveSetStatus("Synced " + new Date().toLocaleTimeString() + " - this device's data is now the shared copy.", "ok");
+    }
+  }catch(err){
+    gdriveSetStatus("Sync error: " + err.message, "err");
+  }
+}
+
+document.getElementById("gdriveConnectBtn") && document.getElementById("gdriveConnectBtn").addEventListener("click", ()=>{
+  if(typeof google === "undefined" || !google.accounts){
+    gdriveSetStatus("Google sign-in script hasn't loaded yet - check your internet connection and reload the page.", "err");
+    return;
+  }
+  gdriveEnsureConnected(gdriveDoSync);
+});
+document.getElementById("gdriveSyncBtn") && document.getElementById("gdriveSyncBtn").addEventListener("click", ()=>{
+  gdriveEnsureConnected(gdriveDoSync);
+});
+
+document.getElementById("tabNav").addEventListener("click", e=>{
+  const btn = e.target.closest("button[data-view]");
+  if(!btn) return;
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.getElementById("view-"+btn.dataset.view).classList.add("active");
+  renderAll(btn.dataset.view);
+});
+
+function renderAll(view){
+  if(!view || view==="dashboard") renderDashboard();
+  if(!view || view==="calendar") renderCalendar();
+  if(!view || view==="deals") renderDeals();
+  if(!view || view==="listings") renderListings();
+  if(!view || view==="sellers") renderSellers();
+  if(!view || view==="buyers") renderBuyers();
+  if(!view || view==="hours") renderHours();
+  if(!view || view==="mileage") renderMileage();
+  if(!view || view==="pay") renderPay();
+  if(!view || view==="expenses") renderExpenses();
+  if(!view || view==="performance") renderPerformance();
+  if(!view || view==="priceguide") renderPriceGuide();
+  if(!view || view==="pl") renderPL();
+  if(!view || view==="settings") renderSettings();
+}
+
+function getFilteredDeals(){
+  const emp = document.getElementById("f-employee").value;
+  const status = document.getElementById("f-status").value;
+  const grade = document.getElementById("f-grade").value;
+  const lead = document.getElementById("f-lead").value;
+  const aging = document.getElementById("f-aging").value;
+  const from = document.getElementById("f-from").value;
+  const to = document.getElementById("f-to").value;
+  return DATA.deals.filter(d=>{
+    if(emp && d.employee!==emp) return false;
+    if(status && dealStatus(d)!==status) return false;
+    if(grade && d.grade!==grade) return false;
+    if(lead && d.lead!==lead) return false;
+    if(aging){
+      const info = agingInfo(d);
+      if(!info || info.level!==aging) return false;
+    }
+    if(from && d.date && d.date<from) return false;
+    if(to && d.date && d.date>to) return false;
+    return true;
+  });
+}
+
+function renderBackupStatus(targetId, bannerMode){
+  const days = daysBetweenNowAnd(DATA.lastBackupAt);
+  let cls = "ok", msg = "";
+  if(days===null){ cls="danger"; msg="Never backed up - export a backup now"; }
+  else if(days>=14){ cls="danger"; msg=`Last backup was ${days} days ago - back up now`; }
+  else if(days>=7){ cls="warn"; msg=`Last backup was ${days} days ago - consider backing up soon`; }
+  else{ cls="ok"; msg = days===0 ? "Backed up today" : `Last backup was ${days} day${days===1?"":"s"} ago`; }
+
+  if(!bannerMode){
+    document.getElementById(targetId).innerHTML = `<span class="backup-badge ${cls}">${msg}</span>`;
+    return;
+  }
+  const el = document.getElementById(targetId);
+  if(cls==="ok" || DATA.deals.length===0){ el.innerHTML=""; return; }
+  el.innerHTML = `<div class="banner ${cls==='danger'?'danger':'warn'}">
+    <span>${msg}.</span>
+    <button class="btn secondary" onclick="document.querySelector('nav button[data-view=\\'settings\\']').click()">Go back up</button>
+  </div>`;
+}
+
+function renderDashboard(){
+  renderBackupStatus("backupBanner", true);
+  const deals = getFilteredDeals();
+  const sold = deals.filter(d=>dealStatus(d)==="Sold");
+  const inStock = deals.filter(d=>dealStatus(d)==="In Stock");
+  const totalBuy = deals.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0),0);
+  const totalSell = sold.reduce((s,d)=>s+(parseFloat(d.sellPrice)||0),0);
+  const totalProfit = sold.reduce((s,d)=>s+(dealProfit(d)||0),0);
+  const avgProfit = sold.length ? totalProfit/sold.length : 0;
+  const totalPayroll = DATA.payPeriods.reduce((s,p)=>s+p.totalPay,0);
+  const totalHours = DATA.hours.reduce((s,h)=>s+hoursWorked(h),0);
+  const inventoryValue = inStock.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0)+dealOtherCosts(d),0);
+
+  const from = document.getElementById("f-from").value;
+  const to = document.getElementById("f-to").value;
+  const empFilter = document.getElementById("f-employee").value;
+  const relevantMileage = DATA.mileageLogs.filter(m=>{
+    if(from && m.date && m.date<from) return false;
+    if(to && m.date && m.date>to) return false;
+    if(empFilter && m.employee!==empFilter) return false;
+    return true;
+  });
+  const totalMiles = relevantMileage.reduce((s,m)=>s+(dailyMiles(m)||0),0);
+  const totalGas = relevantMileage.reduce((s,m)=>s+(parseFloat(m.gas)||0),0);
+  const avgCostMile = totalMiles ? totalGas/totalMiles : 0;
+
+  const totalExpenses = DATA.expenses.filter(e=>{
+    if(from && e.date && e.date<from) return false;
+    if(to && e.date && e.date>to) return false;
+    return true;
+  }).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+  const netProfit = totalProfit - totalExpenses;
+
+  const agingList = deals.map(d=>({deal:d, info:agingInfo(d)})).filter(x=>x.info && x.info.level!=="fresh");
+  const agingCount = agingList.length;
+
+  const sellerSummaries = aggregateSellers(deals).sort((a,b)=> b.count-a.count || b.totalSpent-a.totalSpent);
+  const repeatSellers = sellerSummaries.filter(s=>s.count>=2);
+
+  const uncheckedInStock = inStock.filter(d=>!d.imeiStatus || d.imeiStatus==="Not checked");
+  const riskyInStock = inStock.filter(d=>d.imeiStatus==="Blacklisted" || d.imeiStatus==="Financed (active)");
+  const imeiFlagCount = uncheckedInStock.length + riskyInStock.length;
+  const imeiBannerEl = document.getElementById("imeiBanner");
+  if(riskyInStock.length){
+    imeiBannerEl.innerHTML = `<div class="banner danger">
+      <span>${riskyInStock.length} device${riskyInStock.length===1?"":"s"} in stock flagged Blacklisted or Financed - do not sell until resolved: ${riskyInStock.map(d=>esc(d.model)+" ("+esc(d.client)+")").join(", ")}</span>
+      <button class="btn secondary" onclick="document.querySelector('nav button[data-view=\\'deals\\']').click()">Review deals</button>
+    </div>`;
+  }else{
+    imeiBannerEl.innerHTML = "";
+  }
+
+  const todayForPickups = todayISO();
+  const todaysPickups = DATA.pickups.filter(p=>p.date===todayForPickups && p.status!=="Cancelled");
+  const unconfirmedPickups = DATA.pickups.filter(p=>p.status==="Requested");
+  const pickupBannerEl = document.getElementById("pickupBanner");
+  if(todaysPickups.length || unconfirmedPickups.length){
+    const parts = [];
+    if(todaysPickups.length) parts.push(`${todaysPickups.length} pickup${todaysPickups.length===1?"":"s"} scheduled today`);
+    if(unconfirmedPickups.length) parts.push(`${unconfirmedPickups.length} request${unconfirmedPickups.length===1?"":"s"} still unconfirmed`);
+    pickupBannerEl.innerHTML = `<div class="banner warn">
+      <span>${parts.join(" - ")}.</span>
+      <button class="btn secondary" onclick="document.querySelector('nav button[data-view=\\'calendar\\']').click()">Open pickup calendar</button>
+    </div>`;
+  }else{
+    pickupBannerEl.innerHTML = "";
+  }
+
+  const kpis = [
+    ["Today's pickups", todaysPickups.length, "teal"],
+    ["Unconfirmed pickup requests", unconfirmedPickups.length, unconfirmedPickups.length>0?"yellow":"green"],
+    ["Total deals", deals.length, "blue"],
+    ["Devices sold", sold.length, "teal"],
+    ["Devices in stock", inStock.length, "baby"],
+    ["Total buy $", fmtMoney(totalBuy), "blue"],
+    ["Total sell $", fmtMoney(totalSell), "teal"],
+    ["Gross profit", fmtMoney(totalProfit), totalProfit>=0?"green":"red"],
+    ["Total expenses (overhead)", fmtMoney(totalExpenses), "yellow"],
+    ["Net profit (after expenses)", fmtMoney(netProfit), netProfit>=0?"green":"red"],
+    ["Inventory value tied up", fmtMoney(inventoryValue), "baby"],
+    ["Total miles driven", fmtNum(totalMiles), "baby"],
+    ["Total gas cost", fmtMoney(totalGas), "yellow"],
+    ["Avg cost / mile", fmtMoney(avgCostMile), "yellow"],
+    ["Avg profit / deal", fmtMoney(avgProfit), avgProfit>=0?"green":"red"],
+    ["Total payroll (all time)", fmtMoney(totalPayroll), "blue"],
+    ["Total hours logged", fmtNum(totalHours,1), "baby"],
+  ];
+  let kpiHtml = kpis.map(([label,val,color])=>`
+    <div class="kpi c-${color}"><div class="label">${label}</div><div class="value">${val}</div></div>
+  `).join("");
+  kpiHtml += `<div class="kpi c-red ${agingCount===0?"zero":""}"><div class="label">Aging inventory (14+ days)</div><div class="value">${agingCount}</div></div>`;
+  kpiHtml += `<div class="kpi c-baby"><div class="label">Repeat sellers (2+ deals)</div><div class="value">${repeatSellers.length}</div></div>`;
+  kpiHtml += `<div class="kpi c-red ${imeiFlagCount===0?"zero":""}"><div class="label">IMEI checks needed/flagged (in stock)</div><div class="value">${imeiFlagCount}</div></div>`;
+  document.getElementById("kpiGrid").innerHTML = kpiHtml;
+
+  const agingListEl = document.getElementById("agingList");
+  if(!agingList.length){
+    document.getElementById("agingPanel").style.display = "none";
+  }else{
+    document.getElementById("agingPanel").style.display = "block";
+    agingListEl.innerHTML = agingList.sort((a,b)=>b.info.days-a.info.days).map(({deal,info})=>`
+      <div class="aging-row">
+        <span class="dot age-${info.level}"></span>
+        <span class="info"><b>${esc(deal.model)}</b> - ${esc(deal.client)} - bought ${deal.date||""} by ${employeeBadge(deal.employee)}</span>
+        <span class="days age-${info.level}">${info.days} days</span>
+      </div>
+    `).join("");
+  }
+
+  const topSellersEl = document.getElementById("topSellersList");
+  if(!repeatSellers.length){
+    document.getElementById("topSellersPanel").style.display = "none";
+  }else{
+    document.getElementById("topSellersPanel").style.display = "block";
+    topSellersEl.innerHTML = repeatSellers.slice(0,5).map(s=>`
+      <div class="aging-row">
+        <span class="dot" style="background:var(--baby-dark);"></span>
+        <span class="info"><b>${esc(s.name)}</b> ${s.phone?"- "+esc(s.phone):""} - last deal ${s.lastDate||"-"}</span>
+        <span class="days" style="color:var(--baby-dark);">${s.count} deals - ${fmtMoney(s.totalSpent)}</span>
+      </div>
+    `).join("");
+  }
+
+  const months = last6MonthKeys();
+  const profitByMonth = months.map(m=>{
+    const val = DATA.deals.filter(d=>dealStatus(d)==="Sold" && monthKey(d.sellDate)===m.key)
+      .reduce((s,d)=>s+(dealProfit(d)||0),0);
+    return {label:m.label, value:Math.round(val*100)/100};
+  });
+  const volumeByMonth = months.map(m=>{
+    const val = DATA.deals.filter(d=>monthKey(d.date)===m.key).length;
+    return {label:m.label, value:val};
+  });
+  renderVChart("chartProfitTrend", profitByMonth, "var(--green)", v=>fmtMoney(v));
+  renderVChart("chartVolumeTrend", volumeByMonth, "var(--teal)", v=>String(v));
+
+  const byEmp = {};
+  sold.forEach(d=>{ byEmp[d.employee] = (byEmp[d.employee]||0) + (dealProfit(d)||0); });
+  const empEntries = Object.entries(byEmp).sort((a,b)=>b[1]-a[1]);
+  const maxEmp = Math.max(1, ...empEntries.map(e=>Math.abs(e[1])));
+  document.getElementById("chartEmployee").innerHTML = empEntries.length ? empEntries.map(([name,val])=>`
+    <div class="chart-bar"><div class="name">${esc(name)}</div>
+      <div class="track"><div class="fill" style="width:${Math.max(2,Math.abs(val)/maxEmp*100)}%;background:${val<0?"var(--red)":employeeColor(name)}"></div></div>
+      <div class="amt ${val>=0?"profit-pos":"profit-neg"}">${fmtMoney(val)}</div></div>
+  `).join("") : `<div class="empty-msg">No sold deals yet</div>`;
+
+  const byLead = {};
+  deals.forEach(d=>{ byLead[d.lead||"Unspecified"] = (byLead[d.lead||"Unspecified"]||0) + 1; });
+  const leadEntries = Object.entries(byLead).sort((a,b)=>b[1]-a[1]);
+  const maxLead = Math.max(1, ...leadEntries.map(e=>e[1]));
+  document.getElementById("chartLead").innerHTML = leadEntries.length ? leadEntries.map(([name,val])=>`
+    <div class="chart-bar"><div class="name">${esc(name)}</div>
+      <div class="track"><div class="fill" style="width:${Math.max(2,val/maxLead*100)}%;background:${leadColor(name)}"></div></div>
+      <div class="amt">${val}</div></div>
+  `).join("") : `<div class="empty-msg">No deals yet</div>`;
+
+  const body = document.getElementById("dashDealsBody");
+  if(!deals.length){
+    body.innerHTML = `<tr><td colspan="10" class="empty-msg">No deals match these filters</td></tr>`;
+  }else{
+    body.innerHTML = deals.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(d=>{
+      const info = agingInfo(d);
+      const rowClass = info && info.level==="watch" ? "aging-watch" : info && info.level==="stale" ? "aging-stale" : "";
+      return `
+      <tr class="${rowClass}">
+        <td>${d.date||""}</td><td>${esc(d.client)}</td><td>${employeeBadge(d.employee)}</td>
+        <td>${esc(d.model)}</td><td><span class="badge grade-${d.grade}">${d.grade||""}</span></td>
+        <td>${fmtMoney(d.buyPrice)}</td><td>${d.sellPrice?fmtMoney(d.sellPrice):"-"}</td>
+        <td>${profitCell(dealProfit(d))}</td>
+        <td><span class="badge ${dealStatus(d)==='Sold'?'sold':'stock'}">${dealStatus(d)}</span></td>
+        <td>${info?`<span class="badge age-${info.level}">${info.days}d</span>`:"-"}</td>
+      </tr>`;
+    }).join("");
+  }
+}
+
+function renderVChart(containerId, data, color, formatFn){
+  const el = document.getElementById(containerId);
+  if(!data.length || data.every(d=>d.value===0)){
+    el.innerHTML = `<div class="empty-msg">Not enough data yet</div>`;
+    return;
+  }
+  const max = Math.max(1, ...data.map(d=>Math.abs(d.value)));
+  el.innerHTML = `<div class="vchart">` + data.map(d=>`
+    <div class="col">
+      <div class="val">${formatFn(d.value)}</div>
+      <div class="bar" style="height:${Math.max(3,Math.abs(d.value)/max*100)}%;background:${color};"></div>
+      <div class="lbl">${d.label}</div>
+    </div>
+  `).join("") + `</div>`;
+}
+
+["f-employee","f-status","f-grade","f-lead","f-aging","f-from","f-to"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", renderDashboard);
+});
+document.getElementById("clearFilters").addEventListener("click", ()=>{
+  ["f-employee","f-status","f-grade","f-lead","f-aging","f-from","f-to"].forEach(id=>document.getElementById(id).value="");
+  renderDashboard();
+});
+
+function sortDeals(list, key, dir){
+  const mul = dir==="asc" ? 1 : -1;
+  const valueFor = (d)=>{
+    if(key==="profit") return dealProfit(d);
+    if(key==="status") return dealStatus(d);
+    if(key==="age"){ const info=agingInfo(d); return info?info.days:-1; }
+    return d[key];
+  };
+  return list.slice().sort((a,b)=>{
+    let av = valueFor(a), bv = valueFor(b);
+    const aNull = av===null||av===undefined||av==="";
+    const bNull = bv===null||bv===undefined||bv==="";
+    if(aNull && bNull) return 0;
+    if(aNull) return 1;
+    if(bNull) return -1;
+    if(typeof av==="number" && typeof bv==="number") return (av-bv)*mul;
+    return String(av).localeCompare(String(bv))*mul;
+  });
+}
+
+function refreshDealNameLists(){
+  const clients = [...new Set(DATA.deals.map(d=>d.client).filter(Boolean))].sort();
+  const buyers = [...new Set(DATA.deals.map(d=>d.buyer).filter(Boolean))].sort();
+  document.getElementById("clientNamesList").innerHTML = clients.map(c=>`<option value="${esc(c)}">`).join("");
+  document.getElementById("buyerNamesList").innerHTML = buyers.map(b=>`<option value="${esc(b)}">`).join("");
+}
+
+function renderDeals(){
+  refreshDealNameLists();
+  const body = document.getElementById("dealsBody");
+  document.querySelectorAll('#view-deals thead th.sortable .arrow').forEach(a=>a.textContent="");
+  const activeTh = document.querySelector(`#view-deals thead th[data-sort="${dealSort.key}"] .arrow`);
+  if(activeTh) activeTh.textContent = dealSort.dir==="asc" ? "\u2191" : "\u2193";
+
+  if(!DATA.deals.length){
+    body.innerHTML = `<tr><td colspan="20" class="empty-msg">No deals logged yet. Add one above.</td></tr>`;
+    return;
+  }
+  const sellerCounts = {};
+  DATA.deals.forEach(d=>{ const k=sellerKey(d); sellerCounts[k]=(sellerCounts[k]||0)+1; });
+  const q = (document.getElementById("dealSearch").value||"").toLowerCase().trim();
+  let list = DATA.deals;
+  if(q){
+    list = list.filter(d=>[d.client,d.model,d.buyer,d.notes,d.buyLoc,d.saleLoc,d.sellerPhone,d.employee].some(v=>v && String(v).toLowerCase().includes(q)));
+  }
+  list = sortDeals(list, dealSort.key, dealSort.dir);
+
+  if(!list.length){
+    body.innerHTML = `<tr><td colspan="20" class="empty-msg">No deals match your search</td></tr>`;
+    return;
+  }
+
+  body.innerHTML = list.map(d=>{
+    const info = agingInfo(d);
+    const rowClass = info && info.level==="watch" ? "aging-watch" : info && info.level==="stale" ? "aging-stale" : "";
+    const repeatCount = sellerCounts[sellerKey(d)] || 1;
+    return `
+    <tr class="${rowClass}">
+      <td>${d.date||""}</td>
+      <td>${esc(d.client)} ${repeatCount>=2?`<span class="badge repeat">repeat x${repeatCount}</span>`:""} ${d.source==="driver-form"?`<span class="badge cat" title="Submitted via driver pickup form">Driver</span>`:""}</td>
+      <td class="extra-col">${esc(d.sellerPhone)||"-"}</td>
+      <td>${employeeBadge(d.employee)}</td>
+      <td class="extra-col">${esc(d.storage)}</td><td class="extra-col">${unlockBadge(d.unlock)}</td>
+      <td class="extra-col">${esc(d.imei)||"-"}</td><td>${imeiBadge(d.imeiStatus)}</td>
+      <td><span class="badge grade-${d.grade}">${d.grade||""}</span></td>
+      <td>${fmtMoney(d.buyPrice)}</td>
+      <td class="extra-col">${dealOtherCosts(d)?fmtMoney(dealOtherCosts(d)):"-"}</td>
+      <td>${d.sellPrice?fmtMoney(d.sellPrice):"-"}</td><td class="extra-col">${d.sellDate||"-"}</td>
+      <td>${esc(d.buyer)||"-"}</td><td class="extra-col">${esc(d.saleLoc)||"-"}</td>
+      <td>${profitCell(dealProfit(d))}</td>
+      <td><span class="badge ${dealStatus(d)==='Sold'?'sold':'stock'}">${dealStatus(d)}</span></td>
+      <td>${info?`<span class="badge age-${info.level}">${info.days}d</span>`:"-"}</td>
+      <td class="extra-col">${esc(d.notes)||"-"}</td>
+      <td class="actions-cell">
+        ${dealStatus(d)!=="Sold" ? `<button class="icon-btn" onclick="quickSell('${d.id}')" title="Mark as sold">Sell</button>` : ""}
+        <button class="icon-btn" onclick="editDeal('${d.id}')">Edit</button>
+        <button class="icon-btn" onclick="printReceipt('${d.id}')">Receipt</button>
+        <button class="icon-btn del" onclick="deleteDeal('${d.id}')">Delete</button>
+      </td>
+    </tr>
+  `;}).join("");
+}
+
+function applyDealCompactPref(){
+  const on = localStorage.getItem("ppDealCompact")==="1";
+  document.getElementById("dealCompactToggle").checked = on;
+  document.getElementById("dealsTableWrap").classList.toggle("compact", on);
+}
+document.getElementById("dealCompactToggle").addEventListener("change", e=>{
+  localStorage.setItem("ppDealCompact", e.target.checked ? "1" : "0");
+  document.getElementById("dealsTableWrap").classList.toggle("compact", e.target.checked);
+});
+
+document.querySelectorAll('#view-deals thead th.sortable').forEach(th=>{
+  th.addEventListener("click", ()=>{
+    const key = th.dataset.sort;
+    if(dealSort.key===key){ dealSort.dir = dealSort.dir==="asc" ? "desc" : "asc"; }
+    else{ dealSort = {key, dir:"asc"}; }
+    renderDeals();
+  });
+});
+document.getElementById("dealSearch").addEventListener("input", renderDeals);
+
+document.getElementById("exportDealsCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Date", get:d=>d.date}, {label:"Client", get:d=>d.client}, {label:"Seller phone", get:d=>d.sellerPhone},
+    {label:"Employee", get:d=>d.employee},
+    {label:"Device", get:d=>d.model}, {label:"Storage", get:d=>d.storage},
+    {label:"Unlock", get:d=>d.unlock}, {label:"IMEI/Serial", get:d=>d.imei}, {label:"IMEI check", get:d=>d.imeiStatus},
+    {label:"Grade", get:d=>d.grade}, {label:"Buy price", get:d=>d.buyPrice},
+    {label:"Other costs", get:d=>d.otherCosts},
+    {label:"Sell price", get:d=>d.sellPrice}, {label:"Sell date", get:d=>d.sellDate},
+    {label:"Buyer", get:d=>d.buyer}, {label:"Sale location", get:d=>d.saleLoc},
+    {label:"Profit", get:d=>dealProfit(d)}, {label:"Status", get:d=>dealStatus(d)}, {label:"Notes", get:d=>d.notes},
+    {label:"Source", get:d=>d.source==="driver-form"?"Driver form":"Manual"},
+  ];
+  downloadText(`phone-pros-deals-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.deals), "text/csv");
+});
+
+function renderSellers(){
+  const sellers = aggregateSellers(DATA.deals).sort((a,b)=> b.count-a.count || b.totalSpent-a.totalSpent);
+  const repeatCount = sellers.filter(s=>s.count>=2).length;
+  const topRepeatSpend = sellers.filter(s=>s.count>=2).reduce((s,x)=>s+x.totalSpent,0);
+
+  document.getElementById("sellerKpiGrid").innerHTML = `
+    <div class="kpi c-baby"><div class="label">Total sellers</div><div class="value">${sellers.length}</div></div>
+    <div class="kpi c-teal"><div class="label">Repeat sellers (2+ deals)</div><div class="value">${repeatCount}</div></div>
+    <div class="kpi c-blue"><div class="label">$ spent with repeat sellers</div><div class="value">${fmtMoney(topRepeatSpend)}</div></div>
+  `;
+
+  const body = document.getElementById("sellersBody");
+  const q = (document.getElementById("sellerSearch").value||"").toLowerCase().trim();
+  let list = sellers;
+  if(q){
+    list = list.filter(s=> (s.name||"").toLowerCase().includes(q) || (s.phone||"").toLowerCase().includes(q));
+  }
+  if(!list.length){
+    body.innerHTML = `<tr><td colspan="9" class="empty-msg">No sellers logged yet. Add deals with a client name to build this list.</td></tr>`;
+    return;
+  }
+  const tagOptions = ["","VIP","Watch","Blacklist"];
+  body.innerHTML = list.map(s=>{
+    const note = DATA.sellerNotes[s.key] || {tag:"", notes:""};
+    return `
+    <tr>
+      <td>${esc(s.name)} ${s.count>=2?`<span class="badge repeat">repeat x${s.count}</span>`:""}</td>
+      <td>${esc(s.phone)||"-"}</td>
+      <td>${s.count}</td>
+      <td>${fmtMoney(s.totalSpent)}</td>
+      <td>${fmtMoney(s.avgBuy)}</td>
+      <td>${s.firstDate||"-"}</td>
+      <td>${s.lastDate||"-"}</td>
+      <td>
+        <select onchange="setSellerTag('${s.key}', this.value)">
+          ${tagOptions.map(t=>`<option value="${t}" ${note.tag===t?"selected":""}>${t||"None"}</option>`).join("")}
+        </select>
+      </td>
+      <td><input type="text" value="${esc(note.notes)}" style="min-width:160px;" onchange="setSellerNotes('${s.key}', this.value)"></td>
+    </tr>`;
+  }).join("");
+}
+document.getElementById("sellerSearch").addEventListener("input", renderSellers);
+document.getElementById("exportSellersCsvBtn").addEventListener("click", ()=>{
+  const sellers = aggregateSellers(DATA.deals).sort((a,b)=> b.count-a.count || b.totalSpent-a.totalSpent);
+  const headers = [
+    {label:"Seller", get:s=>s.name}, {label:"Phone", get:s=>s.phone}, {label:"Deals", get:s=>s.count},
+    {label:"Total spent", get:s=>s.totalSpent}, {label:"Avg buy price", get:s=>s.avgBuy},
+    {label:"First deal", get:s=>s.firstDate}, {label:"Last deal", get:s=>s.lastDate},
+    {label:"Tag", get:s=>(DATA.sellerNotes[s.key]||{}).tag||""},
+    {label:"Notes", get:s=>(DATA.sellerNotes[s.key]||{}).notes||""},
+  ];
+  downloadText(`phone-pros-sellers-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, sellers), "text/csv");
+});
+window.setSellerTag = function(key, tag){
+  DATA.sellerNotes[key] = DATA.sellerNotes[key] || {tag:"", notes:""};
+  DATA.sellerNotes[key].tag = tag;
+  saveData(DATA);
+  renderSellers();
+};
+window.setSellerNotes = function(key, notes){
+  DATA.sellerNotes[key] = DATA.sellerNotes[key] || {tag:"", notes:""};
+  DATA.sellerNotes[key].notes = notes;
+  saveData(DATA);
+  showToast("Seller note saved");
+};
+
+function renderBuyers(){
+  const buyers = aggregateBuyers(DATA.deals).sort((a,b)=> b.count-a.count || b.totalRevenue-a.totalRevenue);
+  const repeatCount = buyers.filter(b=>b.count>=2).length;
+  const repeatRevenue = buyers.filter(b=>b.count>=2).reduce((s,b)=>s+b.totalRevenue,0);
+
+  document.getElementById("buyerKpiGrid").innerHTML = `
+    <div class="kpi c-green"><div class="label">Total buyers</div><div class="value">${buyers.length}</div></div>
+    <div class="kpi c-teal"><div class="label">Repeat buyers (2+ purchases)</div><div class="value">${repeatCount}</div></div>
+    <div class="kpi c-blue"><div class="label">$ revenue from repeat buyers</div><div class="value">${fmtMoney(repeatRevenue)}</div></div>
+  `;
+
+  const body = document.getElementById("buyersBody");
+  const q = (document.getElementById("buyerSearch").value||"").toLowerCase().trim();
+  let list = buyers;
+  if(q){ list = list.filter(b=>(b.name||"").toLowerCase().includes(q)); }
+  if(!list.length){
+    body.innerHTML = `<tr><td colspan="9" class="empty-msg">No buyers logged yet. Add a buyer name when you mark a deal as sold.</td></tr>`;
+    return;
+  }
+  const tagOptions = ["","VIP","Watch","Blacklist"];
+  body.innerHTML = list.map(b=>{
+    const note = DATA.buyerNotes[b.key] || {tag:"", notes:""};
+    return `
+    <tr>
+      <td>${esc(b.name)} ${b.count>=2?`<span class="badge repeat">repeat x${b.count}</span>`:""}</td>
+      <td>${b.count}</td>
+      <td>${fmtMoney(b.totalRevenue)}</td>
+      <td>${fmtMoney(b.avgSell)}</td>
+      <td>${esc(b.commonLocation)||"-"}</td>
+      <td>${b.firstDate||"-"}</td>
+      <td>${b.lastDate||"-"}</td>
+      <td>
+        <select onchange="setBuyerTag('${b.key}', this.value)">
+          ${tagOptions.map(t=>`<option value="${t}" ${note.tag===t?"selected":""}>${t||"None"}</option>`).join("")}
+        </select>
+      </td>
+      <td><input type="text" value="${esc(note.notes)}" style="min-width:160px;" onchange="setBuyerNotes('${b.key}', this.value)"></td>
+    </tr>`;
+  }).join("");
+}
+document.getElementById("buyerSearch").addEventListener("input", renderBuyers);
+document.getElementById("exportBuyersCsvBtn").addEventListener("click", ()=>{
+  const buyers = aggregateBuyers(DATA.deals).sort((a,b)=> b.count-a.count || b.totalRevenue-a.totalRevenue);
+  const headers = [
+    {label:"Buyer", get:b=>b.name}, {label:"Devices bought", get:b=>b.count},
+    {label:"Total revenue", get:b=>b.totalRevenue}, {label:"Avg sell price", get:b=>b.avgSell},
+    {label:"Usual sale location", get:b=>b.commonLocation},
+    {label:"First sale", get:b=>b.firstDate}, {label:"Last sale", get:b=>b.lastDate},
+    {label:"Tag", get:b=>(DATA.buyerNotes[b.key]||{}).tag||""},
+    {label:"Notes", get:b=>(DATA.buyerNotes[b.key]||{}).notes||""},
+  ];
+  downloadText(`phone-pros-buyers-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, buyers), "text/csv");
+});
+window.setBuyerTag = function(key, tag){
+  DATA.buyerNotes[key] = DATA.buyerNotes[key] || {tag:"", notes:""};
+  DATA.buyerNotes[key].tag = tag;
+  saveData(DATA);
+  renderBuyers();
+};
+window.setBuyerNotes = function(key, notes){
+  DATA.buyerNotes[key] = DATA.buyerNotes[key] || {tag:"", notes:""};
+  DATA.buyerNotes[key].notes = notes;
+  saveData(DATA);
+  showToast("Buyer note saved");
+};
+
+function clearDealForm(keepDefaults){
+  ["deal-date","deal-time","deal-client","deal-sellerphone","deal-buyloc","deal-model","deal-storage","deal-buyprice",
+   "deal-imei","deal-othercost","deal-sellprice","deal-selldate","deal-buyer","deal-saleloc","deal-notes"]
+   .forEach(id=>document.getElementById(id).value="");
+  document.getElementById("deal-id").value="";
+  document.getElementById("deal-date").value = todayISO();
+  if(!keepDefaults){
+    document.getElementById("deal-lead").selectedIndex=0;
+    document.getElementById("deal-employee").selectedIndex=0;
+  }
+  document.getElementById("deal-unlock").selectedIndex=0;
+  document.getElementById("deal-imeistatus").selectedIndex=0;
+  document.getElementById("deal-grade").selectedIndex=0;
+  document.getElementById("dealFormTitle").textContent = "Add a deal";
+  document.getElementById("cancelDealBtn").style.display="none";
+  document.getElementById("dealMoreDetails").removeAttribute("open");
+  document.getElementById("dealSaleDetails").removeAttribute("open");
+}
+
+let scanStream = null;
+let scanRAF = null;
+let scanTargetId = null;
+function stopScan(){
+  if(scanRAF){ cancelAnimationFrame(scanRAF); scanRAF = null; }
+  if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream = null; }
+  document.getElementById("scanModal").style.display = "none";
+}
+async function startScan(targetInputId){
+  if(!("BarcodeDetector" in window)){
+    showToast("Camera scanning isn't supported in this browser. Try Chrome on Android/desktop, use a handheld USB/Bluetooth scanner, or dial *#06# on the phone to see its IMEI.");
+    return;
+  }
+  scanTargetId = targetInputId;
+  const modal = document.getElementById("scanModal");
+  const video = document.getElementById("scanVideo");
+  const statusEl = document.getElementById("scanStatus");
+  statusEl.textContent = "Point the camera at the barcode...";
+  modal.style.display = "flex";
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+  }catch(err){
+    showToast("Camera access was blocked or unavailable.");
+    modal.style.display = "none";
+    return;
+  }
+  video.srcObject = scanStream;
+  try{ await video.play(); }catch(e){}
+  let detector;
+  try{
+    detector = new BarcodeDetector({ formats: ["code_128","code_39","code_93","itf","ean_13","upc_a","qr_code"] });
+  }catch(e){
+    statusEl.textContent = "Could not start the barcode reader on this device.";
+    return;
+  }
+  const scanFrame = async ()=>{
+    if(!scanStream) return;
+    try{
+      const codes = await detector.detect(video);
+      if(codes && codes.length){
+        const raw = codes[0].rawValue || "";
+        const digits = raw.replace(/\D/g,"");
+        const value = digits.length>=8 ? digits : raw;
+        const field = document.getElementById(scanTargetId);
+        if(field) field.value = value;
+        showToast("Scanned: " + value);
+        stopScan();
+        return;
+      }
+    }catch(e){ /* keep trying next frame */ }
+    scanRAF = requestAnimationFrame(scanFrame);
+  };
+  scanRAF = requestAnimationFrame(scanFrame);
+}
+document.getElementById("scanCancelBtn").addEventListener("click", stopScan);
+document.getElementById("scanImeiBtn").addEventListener("click", ()=>startScan("deal-imei"));
+
+document.getElementById("saveDealBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("deal-id").value;
+  const deal = {
+    id: id || cryptoId(),
+    date: document.getElementById("deal-date").value,
+    time: document.getElementById("deal-time").value,
+    client: document.getElementById("deal-client").value,
+    sellerPhone: document.getElementById("deal-sellerphone").value,
+    buyLoc: document.getElementById("deal-buyloc").value,
+    lead: document.getElementById("deal-lead").value,
+    employee: document.getElementById("deal-employee").value,
+    model: document.getElementById("deal-model").value,
+    storage: document.getElementById("deal-storage").value,
+    unlock: document.getElementById("deal-unlock").value,
+    imei: document.getElementById("deal-imei").value,
+    imeiStatus: document.getElementById("deal-imeistatus").value,
+    grade: document.getElementById("deal-grade").value,
+    buyPrice: parseFloat(document.getElementById("deal-buyprice").value)||0,
+    otherCosts: parseFloat(document.getElementById("deal-othercost").value)||0,
+    sellPrice: document.getElementById("deal-sellprice").value ? parseFloat(document.getElementById("deal-sellprice").value) : null,
+    sellDate: document.getElementById("deal-selldate").value,
+    buyer: document.getElementById("deal-buyer").value,
+    saleLoc: document.getElementById("deal-saleloc").value,
+    notes: document.getElementById("deal-notes").value,
+  };
+  if(!deal.client || !deal.model){ showToast("Client name and device model are required"); return; }
+  if(deal.sellPrice && !deal.sellDate){ deal.sellDate = todayISO(); }
+  const isNew = !id;
+  if(id){
+    const idx = DATA.deals.findIndex(d=>d.id===id);
+    if(idx>=0) DATA.deals[idx]=deal;
+  }else{
+    DATA.deals.push(deal);
+  }
+  saveData(DATA);
+  clearDealForm(isNew);
+  renderDeals();
+  showToast(isNew ? "Deal saved - ready for the next one" : "Deal saved");
+});
+
+document.getElementById("cancelDealBtn").addEventListener("click", ()=>clearDealForm(false));
+document.querySelector('#view-deals .panel.accent-teal').addEventListener("keydown", e=>{
+  if(e.key==="Enter" && e.target.tagName!=="TEXTAREA" && e.target.id!=="deal-imei"){
+    e.preventDefault();
+    document.getElementById("saveDealBtn").click();
+  }
+});
+
+window.editDeal = function(id){
+  const d = DATA.deals.find(x=>x.id===id);
+  if(!d) return;
+  document.getElementById("deal-id").value=d.id;
+  document.getElementById("deal-date").value=d.date||"";
+  document.getElementById("deal-time").value=d.time||"";
+  document.getElementById("deal-client").value=d.client||"";
+  document.getElementById("deal-sellerphone").value=d.sellerPhone||"";
+  document.getElementById("deal-buyloc").value=d.buyLoc||"";
+  document.getElementById("deal-lead").value=d.lead||"";
+  document.getElementById("deal-employee").value=d.employee||"";
+  document.getElementById("deal-model").value=d.model||"";
+  document.getElementById("deal-storage").value=d.storage||"";
+  document.getElementById("deal-unlock").value=d.unlock||"";
+  document.getElementById("deal-imei").value=d.imei||"";
+  document.getElementById("deal-imeistatus").value=d.imeiStatus||"Not checked";
+  document.getElementById("deal-grade").value=d.grade||"";
+  document.getElementById("deal-buyprice").value=d.buyPrice||"";
+  document.getElementById("deal-othercost").value=d.otherCosts||"";
+  document.getElementById("deal-sellprice").value=d.sellPrice||"";
+  document.getElementById("deal-selldate").value=d.sellDate||"";
+  document.getElementById("deal-buyer").value=d.buyer||"";
+  document.getElementById("deal-saleloc").value=d.saleLoc||"";
+  document.getElementById("deal-notes").value=d.notes||"";
+  document.getElementById("dealFormTitle").textContent = "Edit deal";
+  document.getElementById("cancelDealBtn").style.display="inline-block";
+  document.getElementById("dealMoreDetails").setAttribute("open","");
+  if(d.sellPrice) document.getElementById("dealSaleDetails").setAttribute("open","");
+  document.querySelector('nav button[data-view="deals"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+window.quickSell = function(id){
+  editDeal(id);
+  document.getElementById("dealSaleDetails").setAttribute("open","");
+  if(!document.getElementById("deal-selldate").value) document.getElementById("deal-selldate").value = todayISO();
+  setTimeout(()=>document.getElementById("deal-sellprice").focus(), 60);
+};
+window.printReceipt = function(id){
+  const d = DATA.deals.find(x=>x.id===id);
+  if(!d) return;
+  const isSold = dealStatus(d)==="Sold";
+  const title = isSold ? "Sale Receipt" : "Purchase Receipt";
+  const device = `${d.model||""}${d.storage?" ("+d.storage+")":""}`;
+  const rows = isSold ? [
+    ["Date sold", d.sellDate||""],
+    ["Device", device],
+    ["Grade", d.grade||""],
+    ["IMEI / Serial", d.imei||"-"],
+    ["Sold to", d.buyer||""],
+    ["Sale location", d.saleLoc||""],
+    ["Sale price", fmtMoney(d.sellPrice)],
+    ["Handled by", d.employee||""],
+  ] : [
+    ["Date purchased", d.date||""],
+    ["Device", device],
+    ["Grade", d.grade||""],
+    ["IMEI / Serial", d.imei||"-"],
+    ["Purchased from", d.client||""],
+    ["Seller phone", d.sellerPhone||"-"],
+    ["Purchase location", d.buyLoc||""],
+    ["Purchase price", fmtMoney(d.buyPrice)],
+    ["Handled by", d.employee||""],
+  ];
+  const rowsHtml = rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("");
+  const html = `<!DOCTYPE html><html><head><title>${esc(title)}</title><style>
+    body{font-family:Arial,Helvetica,sans-serif;padding:32px;color:#1B2733;}
+    h1{font-size:20px;margin:0 0 2px;}
+    .sub{color:#5F6B76;font-size:13px;margin-bottom:22px;}
+    table{width:100%;border-collapse:collapse;margin-top:8px;}
+    td{padding:9px 4px;border-bottom:1px solid #E1E5EA;font-size:14px;}
+    td:first-child{color:#5F6B76;width:42%;}
+    .sig{margin-top:60px;border-top:1px solid #999;padding-top:6px;width:280px;font-size:12px;color:#5F6B76;}
+  </style></head><body>
+    <h1>Phone Pros</h1>
+    <div class="sub">${esc(title)} - generated ${todayISO()}</div>
+    <table>${rowsHtml}</table>
+    <div class="sig">Signature</div>
+  </body></html>`;
+  const w = window.open("", "_blank", "width=650,height=850");
+  if(!w){ showToast("Please allow pop-ups to print a receipt"); return; }
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{ try{ w.print(); }catch(e){} }, 300);
+};
+window.deleteDeal = function(id){
+  if(!confirm("Delete this deal?")) return;
+  DATA.deals = DATA.deals.filter(d=>d.id!==id);
+  saveData(DATA);
+  renderDeals();
+  showToast("Deal deleted");
+};
+
+function renderListings(){
+  refreshListingDealOptions();
+  const active = DATA.listings.filter(l=>l.status==="Active");
+  const activeValue = active.reduce((s,l)=>s+(parseFloat(l.price)||0),0);
+  document.getElementById("listingKpiGrid").innerHTML = `
+    <div class="kpi c-blue"><div class="label">Active listings</div><div class="value">${active.length}</div></div>
+    <div class="kpi c-teal"><div class="label">Total asking value (active)</div><div class="value">${fmtMoney(activeValue)}</div></div>
+    <div class="kpi c-baby"><div class="label">All listings logged</div><div class="value">${DATA.listings.length}</div></div>
+  `;
+  const body = document.getElementById("listingsBody");
+  if(!DATA.listings.length){
+    body.innerHTML = `<tr><td colspan="6" class="empty-msg">No listings logged yet. List a device above.</td></tr>`;
+    return;
+  }
+  const dealMap = {};
+  DATA.deals.forEach(d=>{ dealMap[d.id]=d; });
+  body.innerHTML = DATA.listings.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(l=>{
+    const d = dealMap[l.dealId];
+    const label = d ? `${esc(d.client)} - ${esc(d.model)}` : "(deal removed)";
+    return `
+    <tr>
+      <td>${label}</td>
+      <td>${colorBadge(l.platform, platformColor(l.platform))}</td>
+      <td>${fmtMoney(l.price)}</td>
+      <td>${l.date||""}</td>
+      <td><span class="badge ${listingClass(l.status)}">${esc(l.status)}</span></td>
+      <td class="actions-cell">
+        <button class="icon-btn" onclick="editListing('${l.id}')">Edit</button>
+        <button class="icon-btn del" onclick="deleteListing('${l.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+document.getElementById("exportListingsCsvBtn").addEventListener("click", ()=>{
+  const dealMap = {};
+  DATA.deals.forEach(d=>{ dealMap[d.id]=d; });
+  const headers = [
+    {label:"Device", get:l=>{ const d=dealMap[l.dealId]; return d ? `${d.client} - ${d.model}` : ""; }},
+    {label:"Platform", get:l=>l.platform}, {label:"List price", get:l=>l.price},
+    {label:"Date listed", get:l=>l.date}, {label:"Status", get:l=>l.status},
+  ];
+  downloadText(`phone-pros-listings-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.listings), "text/csv");
+});
+
+function clearListingForm(){
+  document.getElementById("listing-id").value="";
+  document.getElementById("listing-price").value="";
+  document.getElementById("listing-date").value = todayISO();
+  document.getElementById("listing-status").value = "Active";
+  document.getElementById("listingFormTitle").textContent = "List a device";
+  document.getElementById("cancelListingBtn").style.display="none";
+}
+
+document.getElementById("saveListingBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("listing-id").value;
+  const listing = {
+    id: id || cryptoId(),
+    dealId: document.getElementById("listing-deal").value,
+    platform: document.getElementById("listing-platform").value,
+    price: parseFloat(document.getElementById("listing-price").value)||0,
+    date: document.getElementById("listing-date").value,
+    status: document.getElementById("listing-status").value,
+  };
+  if(!listing.dealId){ showToast("Pick a device to list"); return; }
+  if(!listing.date){ showToast("Date listed is required"); return; }
+  if(id){
+    const idx = DATA.listings.findIndex(l=>l.id===id);
+    if(idx>=0) DATA.listings[idx]=listing;
+  }else{
+    DATA.listings.push(listing);
+  }
+  saveData(DATA);
+  clearListingForm();
+  renderListings();
+  showToast("Listing saved");
+});
+document.getElementById("cancelListingBtn").addEventListener("click", clearListingForm);
+document.querySelector('#view-listings .panel.accent-blue').addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveListingBtn").click();
+  }
+});
+window.editListing = function(id){
+  const l = DATA.listings.find(x=>x.id===id);
+  if(!l) return;
+  refreshListingDealOptions();
+  document.getElementById("listing-id").value=l.id;
+  document.getElementById("listing-deal").value=l.dealId||"";
+  document.getElementById("listing-platform").value=l.platform||"";
+  document.getElementById("listing-price").value=l.price||"";
+  document.getElementById("listing-date").value=l.date||"";
+  document.getElementById("listing-status").value=l.status||"Active";
+  document.getElementById("listingFormTitle").textContent = "Edit listing";
+  document.getElementById("cancelListingBtn").style.display="inline-block";
+  document.querySelector('nav button[data-view="listings"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+window.deleteListing = function(id){
+  if(!confirm("Delete this listing?")) return;
+  DATA.listings = DATA.listings.filter(l=>l.id!==id);
+  saveData(DATA);
+  renderListings();
+  showToast("Listing deleted");
+};
+
+function renderHours(){
+  const body = document.getElementById("hoursBody");
+  if(!DATA.hours.length){
+    body.innerHTML = `<tr><td colspan="9" class="empty-msg">No hours logged yet.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DATA.hours.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(h=>`
+    <tr>
+      <td>${h.date||""}</td><td>${employeeBadge(h.employee)}</td><td>${h.clockIn||""}</td><td>${h.clockOut||""}</td>
+      <td>${fmtNum(h.breakHrs,2)}</td><td>${fmtNum(hoursWorked(h),2)}</td><td>${otCell(overtimeHours(h))}</td>
+      <td>${esc(h.notes)||"-"}</td>
+      <td class="actions-cell">
+        <button class="icon-btn" onclick="editHours('${h.id}')">Edit</button>
+        <button class="icon-btn del" onclick="deleteHours('${h.id}')">Delete</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+document.getElementById("exportHoursCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Date", get:h=>h.date}, {label:"Employee", get:h=>h.employee}, {label:"Clock in", get:h=>h.clockIn},
+    {label:"Clock out", get:h=>h.clockOut}, {label:"Break hrs", get:h=>h.breakHrs},
+    {label:"Hours worked", get:h=>hoursWorked(h)}, {label:"Overtime", get:h=>overtimeHours(h)}, {label:"Notes", get:h=>h.notes},
+  ];
+  downloadText(`phone-pros-hours-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.hours), "text/csv");
+});
+
+function clearHoursForm(){
+  ["hours-date","hours-in","hours-out","hours-notes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("hours-break").value="0";
+  document.getElementById("hours-id").value="";
+  document.getElementById("hours-date").value = todayISO();
+  document.getElementById("hours-employee").selectedIndex=0;
+  document.getElementById("hoursFormTitle").textContent="Log hours";
+  document.getElementById("cancelHoursBtn").style.display="none";
+}
+
+document.getElementById("saveHoursBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("hours-id").value;
+  const h = {
+    id: id || cryptoId(),
+    date: document.getElementById("hours-date").value,
+    employee: document.getElementById("hours-employee").value,
+    clockIn: document.getElementById("hours-in").value,
+    clockOut: document.getElementById("hours-out").value,
+    breakHrs: parseFloat(document.getElementById("hours-break").value)||0,
+    notes: document.getElementById("hours-notes").value,
+  };
+  if(!h.date || !h.clockIn || !h.clockOut){ showToast("Date, clock in, and clock out are required"); return; }
+  if(id){
+    const idx = DATA.hours.findIndex(x=>x.id===id);
+    if(idx>=0) DATA.hours[idx]=h;
+  }else{
+    DATA.hours.push(h);
+  }
+  saveData(DATA);
+  clearHoursForm();
+  renderHours();
+  showToast("Hours saved");
+});
+document.getElementById("cancelHoursBtn").addEventListener("click", clearHoursForm);
+document.querySelector('#view-hours .panel.accent-yellow').addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveHoursBtn").click();
+  }
+});
+
+window.editHours = function(id){
+  const h = DATA.hours.find(x=>x.id===id);
+  if(!h) return;
+  document.getElementById("hours-id").value=h.id;
+  document.getElementById("hours-date").value=h.date||"";
+  document.getElementById("hours-employee").value=h.employee||"";
+  document.getElementById("hours-in").value=h.clockIn||"";
+  document.getElementById("hours-out").value=h.clockOut||"";
+  document.getElementById("hours-break").value=h.breakHrs||0;
+  document.getElementById("hours-notes").value=h.notes||"";
+  document.getElementById("hoursFormTitle").textContent="Edit hours entry";
+  document.getElementById("cancelHoursBtn").style.display="inline-block";
+  document.querySelector('nav button[data-view="hours"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+window.deleteHours = function(id){
+  if(!confirm("Delete this hours entry?")) return;
+  DATA.hours = DATA.hours.filter(h=>h.id!==id);
+  saveData(DATA);
+  renderHours();
+  showToast("Hours entry deleted");
+};
+
+function isOpenMileageEntry(m){
+  return m.endOdo===undefined || m.endOdo===null || m.endOdo==="";
+}
+
+function refreshOpenMileageEntries(){
+  const sel = document.getElementById("mend-entry");
+  if(!sel) return;
+  const current = sel.value;
+  const open = DATA.mileageLogs.filter(isOpenMileageEntry);
+  if(!open.length){
+    sel.innerHTML = `<option value="">No open days - start one above first</option>`;
+    return;
+  }
+  sel.innerHTML = open.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(m=>
+    `<option value="${m.id}">${m.date||"?"} - ${esc(m.employee)||"?"} - ${esc(m.vehicle)||"?"} (start: ${m.startOdo!=null?m.startOdo:"-"})</option>`
+  ).join("");
+  if(current && open.some(m=>m.id===current)) sel.value = current;
+}
+
+function lastClosedEntryFor(vehicle){
+  const prior = DATA.mileageLogs.filter(m=>m.vehicle===vehicle && !isOpenMileageEntry(m))
+    .sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  return prior.length ? prior[prior.length-1] : null;
+}
+function computePersonalMilesGap(vehicle, startOdo){
+  const prior = lastClosedEntryFor(vehicle);
+  if(!prior || startOdo===null || startOdo===undefined) return 0;
+  const gap = startOdo - (parseFloat(prior.endOdo)||0);
+  return Math.max(0, Math.round(gap*10)/10);
+}
+function paidByBadge(m){
+  if(m.paidBy!=="employee") return `<span class="badge paidby-company">Company card</span>`;
+  return m.reimbursed
+    ? `<span class="badge paidby-reimbursed">Reimbursed</span>`
+    : `<span class="badge paidby-owed">Owed ${fmtMoney(m.gas)}</span>`;
+}
+
+function renderMileage(){
+  refreshOpenMileageEntries();
+  const totalMiles = DATA.mileageLogs.reduce((s,m)=>s+(dailyMiles(m)||0),0);
+  const totalPersonalMiles = DATA.mileageLogs.reduce((s,m)=>s+(parseFloat(m.personalMiles)||0),0);
+  const totalGas = DATA.mileageLogs.reduce((s,m)=>s+(parseFloat(m.gas)||0),0);
+  const avgCostMile = totalMiles ? totalGas/totalMiles : 0;
+  const openCount = DATA.mileageLogs.filter(isOpenMileageEntry).length;
+  const owed = DATA.mileageLogs.filter(m=>m.paidBy==="employee" && !m.reimbursed).reduce((s,m)=>s+(parseFloat(m.gas)||0),0);
+  document.getElementById("mileageKpiGrid").innerHTML = `
+    <div class="kpi c-baby"><div class="label">Business miles (all time)</div><div class="value">${fmtNum(totalMiles)}</div></div>
+    <div class="kpi c-blue"><div class="label">Personal/commute miles (all time)</div><div class="value">${fmtNum(totalPersonalMiles)}</div></div>
+    <div class="kpi c-yellow"><div class="label">Total gas cost (all time)</div><div class="value">${fmtMoney(totalGas)}</div></div>
+    <div class="kpi c-yellow"><div class="label">Avg cost / business mile</div><div class="value">${fmtMoney(avgCostMile)}</div></div>
+    <div class="kpi c-red ${openCount===0?"zero":""}"><div class="label">Open days (not closed out)</div><div class="value">${openCount}</div></div>
+    <div class="kpi c-red ${owed===0?"zero":""}"><div class="label">Owed to employees for gas</div><div class="value">${fmtMoney(owed)}</div></div>
+  `;
+
+  const body = document.getElementById("mileageBody");
+  if(!DATA.mileageLogs.length){
+    body.innerHTML = `<tr><td colspan="12" class="empty-msg">No mileage logged yet. Start a day above.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DATA.mileageLogs.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(m=>{
+    const miles = dailyMiles(m);
+    const perMile = miles ? (parseFloat(m.gas)||0)/miles : null;
+    return `
+    <tr>
+      <td>${m.date||""}</td><td>${employeeBadge(m.employee)}</td><td>${vehicleBadge(m.vehicle)}</td>
+      <td>${m.startOdo!==undefined && m.startOdo!==null?fmtNum(m.startOdo,0):"-"}</td>
+      <td>${m.endOdo!==undefined && m.endOdo!==null?fmtNum(m.endOdo,0):"-"}</td>
+      <td>${miles===null?`<span class="badge listing-active">Open</span>`:fmtNum(miles,1)+" mi"}</td>
+      <td>${m.personalMiles?fmtNum(m.personalMiles,1)+" mi":"-"}</td>
+      <td>${fmtMoney(m.gas)}</td>
+      <td>${paidByBadge(m)}</td>
+      <td>${perMile===null?"-":fmtMoney(perMile)}</td>
+      <td>${esc(m.notes)||"-"}</td>
+      <td class="actions-cell">
+        ${m.paidBy==="employee" && !m.reimbursed ? `<button class="icon-btn" onclick="markReimbursed('${m.id}')">Mark reimbursed</button>` : ""}
+        <button class="icon-btn" onclick="editMileage('${m.id}')">Edit</button>
+        <button class="icon-btn del" onclick="deleteMileage('${m.id}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+document.getElementById("exportMileageCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Date", get:m=>m.date}, {label:"Employee", get:m=>m.employee}, {label:"Vehicle", get:m=>m.vehicle},
+    {label:"Start odometer", get:m=>m.startOdo}, {label:"End odometer", get:m=>m.endOdo},
+    {label:"Business miles", get:m=>dailyMiles(m)}, {label:"Personal miles", get:m=>m.personalMiles||0},
+    {label:"Gas cost", get:m=>m.gas},
+    {label:"$/mile", get:m=>{ const mi=dailyMiles(m); return mi ? Math.round((parseFloat(m.gas)||0)/mi*100)/100 : ""; }},
+    {label:"Paid by", get:m=>m.paidBy==="employee"?"Employee":"Company card"},
+    {label:"Reimbursed", get:m=>m.paidBy==="employee"?(m.reimbursed?"Yes":"No"):""},
+    {label:"Notes", get:m=>m.notes},
+  ];
+  downloadText(`phone-pros-mileage-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.mileageLogs), "text/csv");
+});
+
+function resetMileageQuickForms(){
+  document.getElementById("mstart-date").value = todayISO();
+  document.getElementById("mstart-odo").value = "";
+  document.getElementById("mstart-employee").selectedIndex=0;
+  document.getElementById("mstart-vehicle").selectedIndex=0;
+  document.getElementById("mend-odo").value = "";
+  document.getElementById("mend-gas").value = "";
+  document.getElementById("mend-paidby").selectedIndex=0;
+  document.getElementById("mend-notes").value = "";
+  document.getElementById("mstart-gap-hint").style.display = "none";
+}
+
+function updateMstartGapHint(){
+  const vehicle = document.getElementById("mstart-vehicle").value;
+  const startOdo = document.getElementById("mstart-odo").value ? parseFloat(document.getElementById("mstart-odo").value) : null;
+  const hintEl = document.getElementById("mstart-gap-hint");
+  const prior = lastClosedEntryFor(vehicle);
+  if(!prior || startOdo===null){ hintEl.style.display="none"; return; }
+  const gap = computePersonalMilesGap(vehicle, startOdo);
+  if(gap>0){
+    hintEl.style.display = "block";
+    hintEl.textContent = `${fmtNum(gap,1)} miles since the last logged end reading (${prior.endOdo}) will be logged as personal/commute miles.`;
+  }else if(startOdo < (parseFloat(prior.endOdo)||0)){
+    hintEl.style.display = "block";
+    hintEl.textContent = `Heads up: this is lower than the last logged end reading (${prior.endOdo}) for this vehicle - double check the reading or the vehicle picked.`;
+  }else{
+    hintEl.style.display = "none";
+  }
+}
+
+document.getElementById("mstart-vehicle").addEventListener("change", ()=>{
+  const startField = document.getElementById("mstart-odo");
+  if(!startField.value){
+    const prior = lastClosedEntryFor(document.getElementById("mstart-vehicle").value);
+    if(prior) startField.value = prior.endOdo;
+  }
+  updateMstartGapHint();
+});
+document.getElementById("mstart-odo").addEventListener("input", updateMstartGapHint);
+
+document.getElementById("startDayBtn").addEventListener("click", ()=>{
+  const date = document.getElementById("mstart-date").value;
+  const employee = document.getElementById("mstart-employee").value;
+  const vehicle = document.getElementById("mstart-vehicle").value;
+  const startOdo = document.getElementById("mstart-odo").value ? parseFloat(document.getElementById("mstart-odo").value) : null;
+  if(!date){ showToast("Date is required"); return; }
+  if(startOdo===null){ showToast("Enter a starting odometer reading"); return; }
+  const personalMiles = computePersonalMilesGap(vehicle, startOdo);
+  DATA.mileageLogs.push({
+    id: cryptoId(), date, employee, vehicle, startOdo, endOdo: null,
+    personalMiles, gas: 0, paidBy: "company", reimbursed: false, notes: ""
+  });
+  saveData(DATA);
+  resetMileageQuickForms();
+  renderMileage();
+  showToast(personalMiles>0 ? `Day started - logged ${fmtNum(personalMiles,1)} personal/commute miles` : "Day started");
+});
+
+document.getElementById("endDayBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("mend-entry").value;
+  if(!id){ showToast("Pick a day to close out - or start one above first"); return; }
+  const endOdo = document.getElementById("mend-odo").value ? parseFloat(document.getElementById("mend-odo").value) : null;
+  const gas = parseFloat(document.getElementById("mend-gas").value)||0;
+  const paidBy = document.getElementById("mend-paidby").value;
+  const notes = document.getElementById("mend-notes").value;
+  if(endOdo===null){ showToast("Enter an ending odometer reading"); return; }
+  const idx = DATA.mileageLogs.findIndex(m=>m.id===id);
+  if(idx<0){ showToast("That day could not be found"); return; }
+  const entry = DATA.mileageLogs[idx];
+  if(entry.startOdo!==null && entry.startOdo!==undefined && endOdo<entry.startOdo){
+    showToast("End odometer should be greater than start odometer"); return;
+  }
+  entry.endOdo = endOdo;
+  entry.gas = gas;
+  entry.paidBy = paidBy;
+  entry.reimbursed = false;
+  if(notes) entry.notes = entry.notes ? entry.notes+" / "+notes : notes;
+  saveData(DATA);
+  document.getElementById("mend-odo").value = "";
+  document.getElementById("mend-gas").value = "";
+  document.getElementById("mend-paidby").selectedIndex=0;
+  document.getElementById("mend-notes").value = "";
+  renderMileage();
+  showToast(paidBy==="employee" ? `Day closed out - you owe ${fmtMoney(gas)} for gas` : "Day closed out");
+});
+
+window.markReimbursed = function(id){
+  const m = DATA.mileageLogs.find(x=>x.id===id);
+  if(!m) return;
+  m.reimbursed = true;
+  saveData(DATA);
+  renderMileage();
+  showToast("Marked as reimbursed");
+};
+
+function clearMileageForm(){
+  ["mileage-date","mileage-start","mileage-end","mileage-personalmiles","mileage-gas","mileage-notes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("mileage-id").value="";
+  document.getElementById("mileage-date").value = todayISO();
+  document.getElementById("mileage-employee").selectedIndex=0;
+  document.getElementById("mileage-vehicle").selectedIndex=0;
+  document.getElementById("mileage-paidby").selectedIndex=0;
+  document.getElementById("mileage-reimbursed").selectedIndex=0;
+  document.getElementById("cancelMileageBtn").style.display="none";
+  document.getElementById("mileageManualDetails").removeAttribute("open");
+}
+
+document.getElementById("mileage-vehicle").addEventListener("change", ()=>{
+  const startField = document.getElementById("mileage-start");
+  if(startField.value) return;
+  const prior = lastClosedEntryFor(document.getElementById("mileage-vehicle").value);
+  if(prior) startField.value = prior.endOdo;
+});
+
+document.getElementById("saveMileageBtn").addEventListener("click", ()=>{
+  const id = document.getElementById("mileage-id").value;
+  const entry = {
+    id: id || cryptoId(),
+    date: document.getElementById("mileage-date").value,
+    employee: document.getElementById("mileage-employee").value,
+    vehicle: document.getElementById("mileage-vehicle").value,
+    startOdo: document.getElementById("mileage-start").value ? parseFloat(document.getElementById("mileage-start").value) : null,
+    endOdo: document.getElementById("mileage-end").value ? parseFloat(document.getElementById("mileage-end").value) : null,
+    personalMiles: parseFloat(document.getElementById("mileage-personalmiles").value)||0,
+    gas: parseFloat(document.getElementById("mileage-gas").value)||0,
+    paidBy: document.getElementById("mileage-paidby").value,
+    reimbursed: document.getElementById("mileage-reimbursed").value==="yes",
+    notes: document.getElementById("mileage-notes").value,
+  };
+  if(!entry.date){ showToast("Date is required"); return; }
+  if(entry.startOdo!==null && entry.endOdo!==null && entry.endOdo<entry.startOdo){
+    showToast("End odometer should be greater than start odometer"); return;
+  }
+  if(id){
+    const idx = DATA.mileageLogs.findIndex(m=>m.id===id);
+    if(idx>=0) DATA.mileageLogs[idx]=entry;
+  }else{
+    DATA.mileageLogs.push(entry);
+  }
+  saveData(DATA);
+  clearMileageForm();
+  renderMileage();
+  showToast("Mileage saved");
+});
+document.getElementById("cancelMileageBtn").addEventListener("click", clearMileageForm);
+document.getElementById("mileageManualDetails").addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveMileageBtn").click();
+  }
+});
+
+window.editMileage = function(id){
+  const m = DATA.mileageLogs.find(x=>x.id===id);
+  if(!m) return;
+  document.getElementById("mileage-id").value=m.id;
+  document.getElementById("mileage-date").value=m.date||"";
+  document.getElementById("mileage-employee").value=m.employee||"";
+  document.getElementById("mileage-vehicle").value=m.vehicle||"";
+  document.getElementById("mileage-start").value=m.startOdo!==undefined && m.startOdo!==null?m.startOdo:"";
+  document.getElementById("mileage-end").value=m.endOdo!==undefined && m.endOdo!==null?m.endOdo:"";
+  document.getElementById("mileage-personalmiles").value=m.personalMiles||0;
+  document.getElementById("mileage-gas").value=m.gas||"";
+  document.getElementById("mileage-paidby").value=m.paidBy||"company";
+  document.getElementById("mileage-reimbursed").value=m.reimbursed?"yes":"no";
+  document.getElementById("mileage-notes").value=m.notes||"";
+  document.getElementById("cancelMileageBtn").style.display="inline-block";
+  document.getElementById("mileageManualDetails").setAttribute("open","");
+  document.querySelector('nav button[data-view="mileage"]').click();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+window.deleteMileage = function(id){
+  if(!confirm("Delete this mileage entry?")) return;
+  DATA.mileageLogs = DATA.mileageLogs.filter(m=>m.id!==id);
+  saveData(DATA);
+  renderMileage();
+  showToast("Mileage entry deleted");
+};
+
+function renderPay(){
+  const body = document.getElementById("payBody");
+  if(!DATA.payPeriods.length){
+    body.innerHTML = `<tr><td colspan="11" class="empty-msg">No pay periods calculated yet.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DATA.payPeriods.slice().sort((a,b)=>(b.start||"").localeCompare(a.start||"")).map(p=>`
+    <tr>
+      <td>${employeeBadge(p.employee)}</td><td>${p.start}</td><td>${p.end}</td><td>${fmtMoney(p.rate)}</td>
+      <td>${fmtNum(p.regularHours,2)}</td><td>${otCell(p.otHours)}</td>
+      <td>${fmtMoney(p.regularPay)}</td><td>${p.otPay>0?`<span class="badge ot">${fmtMoney(p.otPay)}</span>`:fmtMoney(p.otPay)}</td>
+      <td>${fmtMoney(p.commission||0)}</td><td>${fmtMoney(p.totalPay)}</td>
+      <td class="actions-cell"><button class="icon-btn del" onclick="deletePay('${p.id}')">Delete</button></td>
+    </tr>
+  `).join("");
+}
+
+document.getElementById("exportPayCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Employee", get:p=>p.employee}, {label:"Period start", get:p=>p.start}, {label:"Period end", get:p=>p.end},
+    {label:"Rate", get:p=>p.rate}, {label:"Regular hrs", get:p=>p.regularHours}, {label:"OT hrs", get:p=>p.otHours},
+    {label:"Regular pay", get:p=>p.regularPay}, {label:"OT pay", get:p=>p.otPay},
+    {label:"Commission", get:p=>p.commission||0}, {label:"Total pay", get:p=>p.totalPay},
+  ];
+  downloadText(`phone-pros-pay-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.payPeriods), "text/csv");
+});
+
+document.getElementById("calcPayBtn").addEventListener("click", ()=>{
+  const employee = document.getElementById("pay-employee").value;
+  const start = document.getElementById("pay-start").value;
+  const end = document.getElementById("pay-end").value;
+  const rate = parseFloat(document.getElementById("pay-rate").value)||0;
+  if(!employee || !start || !end){ showToast("Employee, start, and end dates are required"); return; }
+  const relevant = DATA.hours.filter(h=>h.employee===employee && h.date>=start && h.date<=end);
+  const regularHours = relevant.reduce((s,h)=>s+(hoursWorked(h)-overtimeHours(h)),0);
+  const otHours = relevant.reduce((s,h)=>s+overtimeHours(h),0);
+  const regularPay = regularHours*rate;
+  const otPay = otHours*rate*1.5;
+  const commission = employeeCommissionInRange(employee, start, end);
+  const period = {
+    id: cryptoId(), employee, start, end, rate,
+    regularHours: Math.round(regularHours*100)/100, otHours: Math.round(otHours*100)/100,
+    regularPay: Math.round(regularPay*100)/100, otPay: Math.round(otPay*100)/100,
+    commission: Math.round(commission*100)/100,
+    totalPay: Math.round((regularPay+otPay+commission)*100)/100,
+  };
+  DATA.payPeriods.push(period);
+  saveData(DATA);
+  renderPay();
+  showToast(`${employee} earned ${fmtMoney(period.totalPay)} for this period`);
+});
+window.deletePay = function(id){
+  if(!confirm("Delete this pay period?")) return;
+  DATA.payPeriods = DATA.payPeriods.filter(p=>p.id!==id);
+  saveData(DATA);
+  renderPay();
+};
+
+function renderExpenses(){
+  const body = document.getElementById("expensesBody");
+  if(!DATA.expenses.length){
+    body.innerHTML = `<tr><td colspan="5" class="empty-msg">No expenses logged yet.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DATA.expenses.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(e=>`
+    <tr>
+      <td>${e.date||""}</td><td>${categoryBadge(e.category)}</td>
+      <td>${fmtMoney(e.amount)}</td><td>${esc(e.notes)||"-"}</td>
+      <td class="actions-cell"><button class="icon-btn del" onclick="deleteExpense('${e.id}')">Delete</button></td>
+    </tr>
+  `).join("");
+}
+
+document.getElementById("exportExpensesCsvBtn").addEventListener("click", ()=>{
+  const headers = [
+    {label:"Date", get:e=>e.date}, {label:"Category", get:e=>e.category},
+    {label:"Amount", get:e=>e.amount}, {label:"Notes", get:e=>e.notes},
+  ];
+  downloadText(`phone-pros-expenses-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, DATA.expenses), "text/csv");
+});
+
+document.getElementById("saveExpenseBtn").addEventListener("click", ()=>{
+  const expense = {
+    id: cryptoId(),
+    date: document.getElementById("expense-date").value,
+    category: document.getElementById("expense-category").value,
+    amount: parseFloat(document.getElementById("expense-amount").value)||0,
+    notes: document.getElementById("expense-notes").value,
+  };
+  if(!expense.date || !expense.amount){ showToast("Date and amount are required"); return; }
+  DATA.expenses.push(expense);
+  saveData(DATA);
+  ["expense-amount","expense-notes"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("expense-date").value = todayISO();
+  renderExpenses();
+  showToast("Expense saved");
+});
+document.querySelector('#view-expenses .panel.accent-red').addEventListener("keydown", e=>{
+  if(e.key==="Enter"){
+    e.preventDefault();
+    document.getElementById("saveExpenseBtn").click();
+  }
+});
+window.deleteExpense = function(id){
+  if(!confirm("Delete this expense?")) return;
+  DATA.expenses = DATA.expenses.filter(e=>e.id!==id);
+  saveData(DATA);
+  renderExpenses();
+  showToast("Expense deleted");
+};
+
+function renderPerformance(){
+  const body = document.getElementById("perfBody");
+  if(!DATA.employees.length){
+    body.innerHTML = `<tr><td colspan="9" class="empty-msg">Add employees in Settings first.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DATA.employees.map(emp=>{
+    const bought = DATA.deals.filter(d=>d.employee===emp);
+    const sold = bought.filter(d=>dealStatus(d)==="Sold");
+    const spent = bought.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0),0);
+    const revenue = sold.reduce((s,d)=>s+(parseFloat(d.sellPrice)||0),0);
+    const profit = sold.reduce((s,d)=>s+(dealProfit(d)||0),0);
+    const avgProfit = sold.length ? profit/sold.length : 0;
+    const miles = DATA.mileageLogs.filter(m=>m.employee===emp).reduce((s,m)=>s+(dailyMiles(m)||0),0);
+    const commission = bought.reduce((s,d)=>s+commissionForDeal(d),0);
+    return `<tr>
+      <td>${employeeBadge(emp)}</td><td>${bought.length}</td><td>${fmtMoney(spent)}</td><td>${sold.length}</td>
+      <td>${fmtMoney(revenue)}</td><td>${sold.length?profitCell(profit):fmtMoney(profit)}</td><td>${sold.length?fmtMoney(avgProfit):"-"}</td>
+      <td>${fmtNum(miles)}</td><td>${DATA.commissionMode!=="none"?fmtMoney(commission):"-"}</td>
+    </tr>`;
+  }).join("");
+}
+
+function refreshPgModelList(){
+  const models = [...new Set(DATA.deals.map(d=>d.model).filter(Boolean))].sort();
+  document.getElementById("pgModelList").innerHTML = models.map(m=>`<option value="${esc(m)}">`).join("");
+}
+
+function renderPriceGuide(){
+  refreshPgModelList();
+  document.getElementById("pgResults").innerHTML = `<div class="empty-msg">Enter a model above and hit Calculate.</div>`;
+  document.getElementById("pgDealsBody").innerHTML = `<tr><td colspan="6" class="empty-msg">No model selected yet.</td></tr>`;
+}
+
+document.getElementById("pgCalcBtn").addEventListener("click", ()=>{
+  const model = (document.getElementById("pg-model").value||"").trim().toLowerCase();
+  const grade = document.getElementById("pg-grade").value;
+  const targetMargin = parseFloat(document.getElementById("pg-margin").value)||0;
+  const resultsEl = document.getElementById("pgResults");
+  const bodyEl = document.getElementById("pgDealsBody");
+  if(!model){ showToast("Enter a device model first"); return; }
+
+  const matches = DATA.deals.filter(d=>(d.model||"").trim().toLowerCase()===model && (!grade || d.grade===grade));
+  const sold = matches.filter(d=>dealStatus(d)==="Sold");
+
+  if(!sold.length){
+    resultsEl.innerHTML = `<div class="empty-msg">No sold deals yet for this model${grade?" and grade":""}. Log a few sales to build a price guide.</div>`;
+    bodyEl.innerHTML = `<tr><td colspan="6" class="empty-msg">No matching deals</td></tr>`;
+    return;
+  }
+  const avgBuy = sold.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0),0)/sold.length;
+  const avgSell = sold.reduce((s,d)=>s+(parseFloat(d.sellPrice)||0),0)/sold.length;
+  const avgOther = sold.reduce((s,d)=>s+dealOtherCosts(d),0)/sold.length;
+  const avgProfit = sold.reduce((s,d)=>s+(dealProfit(d)||0),0)/sold.length;
+  const avgMarginPct = avgSell ? (avgProfit/avgSell*100) : 0;
+  const suggestedMaxBuy = Math.max(0, avgSell*(1-targetMargin/100) - avgOther);
+  const marginClass = avgMarginPct>=targetMargin ? "profit-pos" : "profit-neg";
+
+  resultsEl.innerHTML = `
+    <div class="kpi-grid" style="margin-top:14px;">
+      <div class="kpi c-blue"><div class="label">Sold deals used</div><div class="value">${sold.length}</div></div>
+      <div class="kpi c-blue"><div class="label">Avg buy price</div><div class="value">${fmtMoney(avgBuy)}</div></div>
+      <div class="kpi c-teal"><div class="label">Avg sell price</div><div class="value">${fmtMoney(avgSell)}</div></div>
+      <div class="kpi c-green"><div class="label">Avg profit / device</div><div class="value">${fmtMoney(avgProfit)}</div></div>
+      <div class="kpi c-yellow"><div class="label">Avg margin achieved</div><div class="value"><span class="${marginClass}">${fmtNum(avgMarginPct,1)}%</span></div></div>
+      <div class="kpi c-green"><div class="label">Suggested max buy (for ${fmtNum(targetMargin,0)}% margin)</div><div class="value">${fmtMoney(suggestedMaxBuy)}</div></div>
+    </div>`;
+
+  bodyEl.innerHTML = sold.slice().sort((a,b)=>(b.sellDate||"").localeCompare(a.sellDate||"")).map(d=>{
+    const profit = dealProfit(d);
+    const margin = d.sellPrice ? (profit/(parseFloat(d.sellPrice)||1)*100) : 0;
+    return `<tr>
+      <td>${d.sellDate||d.date||""}</td>
+      <td><span class="badge grade-${d.grade}">${d.grade||""}</span></td>
+      <td>${fmtMoney(d.buyPrice)}</td>
+      <td>${fmtMoney(d.sellPrice)}</td>
+      <td>${profitCell(profit)}</td>
+      <td>${fmtNum(margin,1)}%</td>
+    </tr>`;
+  }).join("");
+});
+
+function plRangeFrom(preset){
+  const now = new Date();
+  const y = now.getFullYear(), m = now.getMonth();
+  const pad = n=>String(n).padStart(2,"0");
+  const iso = (yy,mm,dd)=>`${yy}-${pad(mm+1)}-${pad(dd)}`;
+  if(preset==="month") return {from: iso(y,m,1), to: todayISO()};
+  if(preset==="quarter"){ const qStartMonth = Math.floor(m/3)*3; return {from: iso(y,qStartMonth,1), to: todayISO()}; }
+  if(preset==="year") return {from: iso(y,0,1), to: todayISO()};
+  if(preset==="lastyear") return {from: iso(y-1,0,1), to: iso(y-1,11,31)};
+  if(preset==="all") return {from:"", to:""};
+  return {from:"", to:""};
+}
+["plThisMonth","plThisQuarter","plThisYear","plLastYear","plAllTime"].forEach(id=>{
+  document.getElementById(id).addEventListener("click", ()=>{
+    const preset = {plThisMonth:"month", plThisQuarter:"quarter", plThisYear:"year", plLastYear:"lastyear", plAllTime:"all"}[id];
+    const range = plRangeFrom(preset);
+    document.getElementById("pl-from").value = range.from;
+    document.getElementById("pl-to").value = range.to;
+    runPLReport();
+  });
+});
+document.getElementById("plCalcBtn").addEventListener("click", runPLReport);
+document.getElementById("exportPlCsvBtn").addEventListener("click", ()=>{
+  const rows = window._lastPLReport;
+  if(!rows){ showToast("Run a report first"); return; }
+  const headers = [{label:"Line item", get:r=>r[0]}, {label:"Amount", get:r=>r[1]}];
+  downloadText(`phone-pros-pl-${new Date().toISOString().slice(0,10)}.csv`, toCSV(headers, rows), "text/csv");
+});
+
+function runPLReport(){
+  const from = document.getElementById("pl-from").value;
+  const to = document.getElementById("pl-to").value;
+  const soldInRange = DATA.deals.filter(d=>{
+    if(dealStatus(d)!=="Sold") return false;
+    const dt = d.sellDate;
+    if(!dt) return false;
+    if(from && dt<from) return false;
+    if(to && dt>to) return false;
+    return true;
+  });
+  const revenue = soldInRange.reduce((s,d)=>s+(parseFloat(d.sellPrice)||0),0);
+  const cogs = soldInRange.reduce((s,d)=>s+(parseFloat(d.buyPrice)||0)+dealOtherCosts(d),0);
+  const grossProfit = revenue - cogs;
+  const payroll = DATA.payPeriods.filter(p=>{
+    if(from && p.start && p.start<from) return false;
+    if(to && p.start && p.start>to) return false;
+    return true;
+  }).reduce((s,p)=>s+(p.totalPay||0),0);
+  const overhead = DATA.expenses.filter(e=>{
+    if(from && e.date && e.date<from) return false;
+    if(to && e.date && e.date>to) return false;
+    return true;
+  }).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);
+  const netProfit = grossProfit - payroll - overhead;
+
+  const rows = [
+    ["Revenue (devices sold)", fmtMoney(revenue)],
+    ["Cost of goods sold (buy price + other costs)", fmtMoney(cogs)],
+    ["Gross profit", fmtMoney(grossProfit)],
+    ["Payroll", fmtMoney(payroll)],
+    ["Overhead expenses", fmtMoney(overhead)],
+    ["Net profit", fmtMoney(netProfit)],
+  ];
+  window._lastPLReport = [
+    ["Revenue (devices sold)", revenue], ["Cost of goods sold", cogs], ["Gross profit", grossProfit],
+    ["Payroll", payroll], ["Overhead expenses", overhead], ["Net profit", netProfit],
+  ];
+  document.getElementById("plResults").innerHTML = `
+    <div class="kpi-grid" style="margin-top:14px;">
+      ${rows.map(([label,val],i)=>{
+        const isNet = i===rows.length-1 || label.startsWith("Gross") || label.startsWith("Net");
+        const color = isNet ? (netProfit>=0 || !label.startsWith("Net") ? "green" : "red") : "blue";
+        return `<div class="kpi c-${label.startsWith("Net")&&netProfit<0?"red":color}"><div class="label">${label}</div><div class="value">${val}</div></div>`;
+      }).join("")}
+    </div>
+    <p class="hint" style="margin-top:14px;">Range: ${from||"the beginning"} to ${to||"today"}. Revenue and COGS are matched to a device's sell date; payroll is matched to a pay period's start date; overhead is matched to the expense date.</p>`;
+}
+
+function renderPL(){
+  document.getElementById("plResults").innerHTML = `<div class="empty-msg">Pick a date range and run the report.</div>`;
+}
+
+function renderSettings(){
+  renderBackupStatus("backupStatus", false);
+  document.getElementById("employeeList").innerHTML = DATA.employees.map(e=>{
+    const c = employeeColor(e);
+    return `<div class="pill" style="background:${c}1A;color:${c};border:1px solid ${c}55;">${esc(e)} <button onclick="removeEmployee('${e.replace(/'/g,"\\'")}')" style="color:${c};">&times;</button></div>`;
+  }).join("") || `<span style="color:var(--text-muted);font-size:13px;">No employees yet</span>`;
+  document.getElementById("leadList").innerHTML = DATA.leadSources.map(l=>{
+    const c = leadColor(l);
+    return `<div class="pill" style="background:${c}1A;color:${c};border:1px solid ${c}55;">${esc(l)} <button onclick="removeLead('${l.replace(/'/g,"\\'")}')" style="color:${c};">&times;</button></div>`;
+  }).join("") || `<span style="color:var(--text-muted);font-size:13px;">No lead sources yet</span>`;
+  document.getElementById("vehicleList").innerHTML = DATA.vehicles.map(v=>{
+    const c = vehicleColor(v);
+    return `<div class="pill" style="background:${c}1A;color:${c};border:1px solid ${c}55;">${esc(v)} <button onclick="removeVehicle('${v.replace(/'/g,"\\'")}')" style="color:${c};">&times;</button></div>`;
+  }).join("") || `<span style="color:var(--text-muted);font-size:13px;">No vehicles yet</span>`;
+  document.getElementById("categoryList").innerHTML = DATA.expenseCategories.map(c2=>{
+    const c = categoryColor(c2);
+    return `<div class="pill" style="background:${c}1A;color:${c};border:1px solid ${c}55;">${esc(c2)} <button onclick="removeCategory('${c2.replace(/'/g,"\\'")}')" style="color:${c};">&times;</button></div>`;
+  }).join("") || `<span style="color:var(--text-muted);font-size:13px;">No categories yet</span>`;
+  document.getElementById("platformList").innerHTML = DATA.listingPlatforms.map(p=>{
+    const c = platformColor(p);
+    return `<div class="pill" style="background:${c}1A;color:${c};border:1px solid ${c}55;">${esc(p)} <button onclick="removePlatform('${p.replace(/'/g,"\\'")}')" style="color:${c};">&times;</button></div>`;
+  }).join("") || `<span style="color:var(--text-muted);font-size:13px;">No platforms yet</span>`;
+  document.getElementById("commissionMode").value = DATA.commissionMode || "none";
+  document.getElementById("commissionRate").value = DATA.commissionRate || 0;
+  document.getElementById("driverFormCsvUrl").value = DATA.driverFormCsvUrl || "";
+  const importedCount = DATA.deals.filter(d=>d.source==="driver-form").length;
+  document.getElementById("pickupImportStatus").textContent = DATA.driverFormCsvUrl
+    ? `${importedCount} pickup${importedCount===1?"":"s"} imported from the driver form so far.`
+    : "Paste your published CSV link above to get started.";
+}
+
+document.getElementById("addEmployeeBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newEmployee");
+  const name = input.value.trim();
+  if(!name) return;
+  if(DATA.employees.includes(name)){ showToast("That employee already exists"); return; }
+  DATA.employees.push(name);
+  saveData(DATA);
+  input.value="";
+  refreshAllDropdowns();
+  renderSettings();
+  showToast("Employee added");
+});
+window.removeEmployee = function(name){
+  if(!confirm(`Remove ${name}? Existing records that reference them will keep the name as text.`)) return;
+  DATA.employees = DATA.employees.filter(e=>e!==name);
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderSettings();
+};
+document.getElementById("addLeadBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newLead");
+  const name = input.value.trim();
+  if(!name) return;
+  if(DATA.leadSources.includes(name)){ showToast("That lead source already exists"); return; }
+  DATA.leadSources.push(name);
+  saveData(DATA);
+  input.value="";
+  refreshAllDropdowns();
+  renderSettings();
+  showToast("Lead source added");
+});
+window.removeLead = function(name){
+  if(!confirm(`Remove lead source "${name}"?`)) return;
+  DATA.leadSources = DATA.leadSources.filter(l=>l!==name);
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderSettings();
+};
+document.getElementById("addVehicleBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newVehicle");
+  const name = input.value.trim();
+  if(!name) return;
+  if(DATA.vehicles.includes(name)){ showToast("That vehicle already exists"); return; }
+  DATA.vehicles.push(name);
+  saveData(DATA);
+  input.value="";
+  refreshAllDropdowns();
+  renderSettings();
+  showToast("Vehicle added");
+});
+window.removeVehicle = function(name){
+  if(!confirm(`Remove ${name}? Deals already logged against it keep their mileage history.`)) return;
+  DATA.vehicles = DATA.vehicles.filter(v=>v!==name);
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderSettings();
+};
+document.getElementById("addCategoryBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newCategory");
+  const name = input.value.trim();
+  if(!name) return;
+  if(DATA.expenseCategories.includes(name)){ showToast("That category already exists"); return; }
+  DATA.expenseCategories.push(name);
+  saveData(DATA);
+  input.value="";
+  refreshAllDropdowns();
+  renderSettings();
+  showToast("Category added");
+});
+window.removeCategory = function(name){
+  if(!confirm(`Remove expense category "${name}"?`)) return;
+  DATA.expenseCategories = DATA.expenseCategories.filter(c=>c!==name);
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderSettings();
+};
+document.getElementById("addPlatformBtn").addEventListener("click", ()=>{
+  const input = document.getElementById("newPlatform");
+  const name = input.value.trim();
+  if(!name) return;
+  if(DATA.listingPlatforms.includes(name)){ showToast("That platform already exists"); return; }
+  DATA.listingPlatforms.push(name);
+  saveData(DATA);
+  input.value="";
+  refreshAllDropdowns();
+  renderSettings();
+  showToast("Platform added");
+});
+window.removePlatform = function(name){
+  if(!confirm(`Remove listing platform "${name}"?`)) return;
+  DATA.listingPlatforms = DATA.listingPlatforms.filter(p=>p!==name);
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderSettings();
+};
+document.getElementById("saveCommissionBtn").addEventListener("click", ()=>{
+  DATA.commissionMode = document.getElementById("commissionMode").value;
+  DATA.commissionRate = parseFloat(document.getElementById("commissionRate").value)||0;
+  saveData(DATA);
+  showToast("Commission settings saved");
+});
+
+document.getElementById("saveDriverFormUrlBtn").addEventListener("click", ()=>{
+  DATA.driverFormCsvUrl = document.getElementById("driverFormCsvUrl").value.trim();
+  saveData(DATA);
+  showToast("Driver form link saved");
+  renderSettings();
+});
+
+document.getElementById("importPickupsBtn").addEventListener("click", async ()=>{
+  const url = document.getElementById("driverFormCsvUrl").value.trim();
+  if(!url){ showToast("Paste your published CSV link first"); return; }
+  const statusEl = document.getElementById("pickupImportStatus");
+  statusEl.textContent = "Fetching...";
+  try{
+    const res = await fetch(url, {cache:"no-store"});
+    if(!res.ok) throw new Error("HTTP "+res.status);
+    const text = await res.text();
+    const result = importPickupsFromCsvText(text);
+    if(result.error){ statusEl.textContent = result.error; showToast(result.error); return; }
+    refreshAllDropdowns();
+    renderAll();
+    const msg = `Imported ${result.imported} new pickup${result.imported===1?"":"s"}` + (result.skipped?`, skipped ${result.skipped} already imported`:"") + (result.dateWarnings?`. ${result.dateWarnings} had an unexpected date format - check those rows.`:".");
+    statusEl.textContent = msg;
+    showToast(msg);
+  }catch(err){
+    statusEl.textContent = "Couldn't fetch that link directly (likely a browser CORS block). Use \"Paste the CSV manually\" below instead.";
+    showToast("Fetch failed - try pasting the CSV manually below");
+  }
+});
+
+document.getElementById("importPastedCsvBtn").addEventListener("click", ()=>{
+  const text = document.getElementById("pickupCsvPaste").value;
+  if(!text.trim()){ showToast("Paste the CSV content first"); return; }
+  const result = importPickupsFromCsvText(text);
+  const statusEl = document.getElementById("pickupImportStatus");
+  if(result.error){ statusEl.textContent = result.error; showToast(result.error); return; }
+  refreshAllDropdowns();
+  renderAll();
+  document.getElementById("pickupCsvPaste").value = "";
+  const msg = `Imported ${result.imported} new pickup${result.imported===1?"":"s"}` + (result.skipped?`, skipped ${result.skipped} already imported`:"") + (result.dateWarnings?`. ${result.dateWarnings} had an unexpected date format - check those rows.`:".");
+  statusEl.textContent = msg;
+  showToast(msg);
+});
+
+document.getElementById("exportBtn").addEventListener("click", ()=>{
+  DATA.lastBackupAt = new Date().toISOString();
+  saveData(DATA);
+  downloadText(`phone-pros-backup-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(DATA,null,2), "application/json");
+  renderSettings();
+  renderDashboard();
+  showToast("Backup exported");
+});
+function applyImportedData(parsed){
+  // Shared by "Import backup" (file) and Google Drive cross-device sync -
+  // takes a parsed DATA object from any prior version of this dashboard and
+  // fills in any fields that didn't exist yet when it was saved.
+  if(!parsed || !parsed.deals || !parsed.employees) throw new Error("bad format");
+  DATA = parsed;
+  DATA.vehicles = DATA.vehicles || ["Car 1"];
+  DATA.expenseCategories = DATA.expenseCategories || DEFAULT_EXPENSE_CATEGORIES.slice();
+  DATA.expenses = DATA.expenses || [];
+  DATA.mileageLogs = (DATA.mileageLogs || []).map(m=>{
+    if(m.personalMiles===undefined || m.personalMiles===null) m.personalMiles = 0;
+    if(m.paidBy===undefined) m.paidBy = "company";
+    if(m.reimbursed===undefined) m.reimbursed = false;
+    return m;
+  });
+  DATA.sellerNotes = DATA.sellerNotes || {};
+  DATA.buyerNotes = DATA.buyerNotes || {};
+  DATA.listings = DATA.listings || [];
+  DATA.listingPlatforms = DATA.listingPlatforms || DEFAULT_LISTING_PLATFORMS.slice();
+  DATA.commissionMode = DATA.commissionMode || "none";
+  if(DATA.commissionRate===undefined || DATA.commissionRate===null) DATA.commissionRate = 0;
+  if(DATA.driverFormCsvUrl===undefined) DATA.driverFormCsvUrl = "";
+  DATA.importedPickupTimestamps = DATA.importedPickupTimestamps || [];
+  DATA.pickups = DATA.pickups || [];
+  if(DATA.lastBackupAt===undefined) DATA.lastBackupAt = null;
+  if(DATA.lastModified===undefined) DATA.lastModified = null;
+  return DATA;
+}
+
+document.getElementById("importBtn").addEventListener("click", ()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change", e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev=>{
+    try{
+      applyImportedData(JSON.parse(ev.target.result));
+      saveData(DATA);
+      refreshAllDropdowns();
+      renderAll();
+      showToast("Backup imported");
+    }catch(err){
+      showToast("Could not read that file");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value="";
+});
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(!confirm("This will erase all deals, hours, expenses, and pay records in this browser. Continue?")) return;
+  DATA = defaultData();
+  saveData(DATA);
+  refreshAllDropdowns();
+  renderAll();
+  showToast("Data reset");
+});
+
+document.getElementById("todayLabel").textContent = new Date().toLocaleDateString(undefined,{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+
+refreshAllDropdowns();
+applyDealCompactPref();
+clearDealForm(true);
+clearHoursForm();
+clearMileageForm();
+resetMileageQuickForms();
+clearListingForm();
+clearPickupForm();
+document.getElementById("expense-date").value = todayISO();
+renderAll();
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", ()=>{
+    navigator.serviceWorker.register("sw.js").catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
