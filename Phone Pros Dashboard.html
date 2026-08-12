@@ -2562,59 +2562,83 @@ function clearDealForm(keepDefaults){
   document.getElementById("dealSaleDetails").removeAttribute("open");
 }
 
-let scanStream = null;
-let scanRAF = null;
 let scanTargetId = null;
+let zxingReader = null;
+let zxingLoadPromise = null;
+
+function loadZXing(){
+  if(window.ZXing) return Promise.resolve();
+  if(zxingLoadPromise) return zxingLoadPromise;
+  zxingLoadPromise = new Promise((resolve, reject)=>{
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/@zxing/library@latest/umd/index.min.js";
+    script.onload = ()=>resolve();
+    script.onerror = ()=>{ zxingLoadPromise = null; reject(new Error("load failed")); };
+    document.head.appendChild(script);
+  });
+  return zxingLoadPromise;
+}
+
 function stopScan(){
-  if(scanRAF){ cancelAnimationFrame(scanRAF); scanRAF = null; }
-  if(scanStream){ scanStream.getTracks().forEach(t=>t.stop()); scanStream = null; }
+  if(zxingReader){ try{ zxingReader.reset(); }catch(e){} zxingReader = null; }
+  const video = document.getElementById("scanVideo");
+  if(video && video.srcObject){
+    try{ video.srcObject.getTracks().forEach(t=>t.stop()); }catch(e){}
+    video.srcObject = null;
+  }
   document.getElementById("scanModal").style.display = "none";
 }
+
 async function startScan(targetInputId){
-  if(!("BarcodeDetector" in window)){
-    showToast("Camera scanning isn't supported in this browser. Try Chrome on Android/desktop, use a handheld USB/Bluetooth scanner, or dial *#06# on the phone to see its IMEI.");
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    showToast("Camera access isn't available in this browser. Use a handheld USB/Bluetooth scanner instead, or dial *#06# on the phone to see its IMEI.");
     return;
   }
   scanTargetId = targetInputId;
   const modal = document.getElementById("scanModal");
   const video = document.getElementById("scanVideo");
   const statusEl = document.getElementById("scanStatus");
-  statusEl.textContent = "Point the camera at the barcode...";
+  statusEl.textContent = "Loading scanner...";
   modal.style.display = "flex";
+
   try{
-    scanStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-  }catch(err){
-    showToast("Camera access was blocked or unavailable.");
+    await loadZXing();
+  }catch(e){
+    statusEl.textContent = "";
+    showToast("Couldn't load the scanner - check your internet connection. Use a handheld USB/Bluetooth scanner instead, or dial *#06# on the phone to see its IMEI.");
     modal.style.display = "none";
     return;
   }
-  video.srcObject = scanStream;
-  try{ await video.play(); }catch(e){}
-  let detector;
+
+  statusEl.textContent = "Point the camera at the barcode...";
   try{
-    detector = new BarcodeDetector({ formats: ["code_128","code_39","code_93","itf","ean_13","upc_a","qr_code"] });
-  }catch(e){
-    statusEl.textContent = "Could not start the barcode reader on this device.";
-    return;
-  }
-  const scanFrame = async ()=>{
-    if(!scanStream) return;
-    try{
-      const codes = await detector.detect(video);
-      if(codes && codes.length){
-        const raw = codes[0].rawValue || "";
-        const digits = raw.replace(/\D/g,"");
-        const value = digits.length>=8 ? digits : raw;
-        const field = document.getElementById(scanTargetId);
-        if(field) field.value = value;
-        showToast("Scanned: " + value);
-        stopScan();
-        return;
+    const hints = new Map();
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [
+      ZXing.BarcodeFormat.CODE_128, ZXing.BarcodeFormat.CODE_39, ZXing.BarcodeFormat.CODE_93,
+      ZXing.BarcodeFormat.ITF, ZXing.BarcodeFormat.EAN_13, ZXing.BarcodeFormat.UPC_A, ZXing.BarcodeFormat.QR_CODE,
+    ]);
+    zxingReader = new ZXing.BrowserMultiFormatReader(hints);
+    await zxingReader.decodeFromConstraints(
+      { video: { facingMode: "environment" } },
+      video,
+      (result, err)=>{
+        if(result){
+          const raw = result.getText() || "";
+          const digits = raw.replace(/\D/g,"");
+          const value = digits.length>=8 ? digits : raw;
+          const field = document.getElementById(scanTargetId);
+          if(field) field.value = value;
+          showToast("Scanned: " + value);
+          stopScan();
+        }
+        // per-frame "not found yet" errors are expected while searching - ignore them
       }
-    }catch(e){ /* keep trying next frame */ }
-    scanRAF = requestAnimationFrame(scanFrame);
-  };
-  scanRAF = requestAnimationFrame(scanFrame);
+    );
+  }catch(err){
+    statusEl.textContent = "";
+    showToast("Camera access was blocked or unavailable.");
+    modal.style.display = "none";
+  }
 }
 document.getElementById("scanCancelBtn").addEventListener("click", stopScan);
 document.getElementById("scanImeiBtn").addEventListener("click", ()=>startScan("deal-imei"));
