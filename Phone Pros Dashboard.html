@@ -998,7 +998,7 @@ details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted
       <button class="btn" id="gdriveSyncBtn" style="display:none;">Sync data now</button>
       <span class="gcal-sync-status" id="gdriveSyncStatus">Not connected.</span>
     </div>
-    <div class="hint">Keeps this dashboard's data the same on every device where you're signed in and synced (uses a private file in your own Google Drive - not visible in your normal Drive folder). Whichever device has the newer changes wins when you sync, so sync right before switching devices to avoid losing edits. Same connection as the Google Calendar sync on the Pickup Calendar tab - you only need to connect once.</div>
+    <div class="hint">Keeps this dashboard's data the same on every device where you're signed in and synced (uses a private file in your own Google Drive - not visible in your normal Drive folder). Whichever device has the newer changes wins when you sync, so sync right before switching devices to avoid losing edits. Before any sync replaces data, you'll see a summary of what's on each side and have to confirm - and a dated safety copy of whatever's about to be replaced is saved to Drive automatically, so a sync from the wrong device can be undone. Same connection as the Google Calendar sync on the Pickup Calendar tab - you only need to connect once.</div>
   </div>
   <div class="panel">
     <h2>Data and backups</h2>
@@ -1983,6 +1983,39 @@ async function driveUploadFile(fileId, jsonText){
   }
 }
 
+function summarizeDataForSync(d){
+  const deals = (d.deals || []).length;
+  const hours = (d.hours || []).length;
+  const mileage = (d.mileageLogs || []).length;
+  const pickups = (d.pickups || []).length;
+  const when = d.lastModified ? new Date(d.lastModified).toLocaleString() : "unknown time";
+  return deals + " deal" + (deals===1?"":"s") + ", " + hours + " hours entr" + (hours===1?"y":"ies")
+    + ", " + mileage + " mileage log" + (mileage===1?"":"s") + ", " + pickups + " pickup" + (pickups===1?"":"s")
+    + " (last changed " + when + ")";
+}
+
+// Saves a dated, one-off safety copy of data that's about to be overwritten, so a
+// bad sync (wrong device, stale data, etc.) can always be manually undone from Drive.
+async function driveBackupCopy(jsonText){
+  try{
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const metadata = { name: "phone-pros-dashboard-data-backup-" + stamp + ".json", parents: ["appDataFolder"] };
+    const boundary = "phoneprosboundary";
+    const body =
+      "--" + boundary + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" + JSON.stringify(metadata) + "\r\n"
+      + "--" + boundary + "\r\nContent-Type: application/json\r\n\r\n" + jsonText + "\r\n"
+      + "--" + boundary + "--";
+    await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + gcalAccessToken,
+        "Content-Type": "multipart/related; boundary=" + boundary,
+      },
+      body,
+    });
+  }catch(e){ /* best-effort - never block a sync just because the safety copy failed */ }
+}
+
 async function gdriveDoSync(){
   gdriveSetStatus("Syncing...", "");
   try{
@@ -1996,12 +2029,28 @@ async function gdriveDoSync(){
     const cloudTime = cloud && cloud.lastModified ? new Date(cloud.lastModified).getTime() : 0;
     const localTime = DATA.lastModified ? new Date(DATA.lastModified).getTime() : 0;
     if(cloudTime > localTime){
+      const ok = confirm(
+        "This will REPLACE the data on THIS device with the cloud copy.\n\n"
+        + "This device currently has: " + summarizeDataForSync(DATA) + "\n\n"
+        + "The cloud copy has: " + summarizeDataForSync(cloud) + "\n\n"
+        + "A safety copy of what's currently on this device will be saved to Drive first, in case this is a mistake. Continue?"
+      );
+      if(!ok){ gdriveSetStatus("Sync cancelled - nothing changed.", ""); return; }
+      await driveBackupCopy(JSON.stringify(DATA));
       applyImportedData(cloud);
       saveData(DATA);
       refreshAllDropdowns();
       renderAll();
       gdriveSetStatus("Synced " + new Date().toLocaleTimeString() + " - pulled newer data from another device.", "ok");
     }else{
+      const ok = confirm(
+        "This will REPLACE the cloud copy with the data on THIS device.\n\n"
+        + "This device has: " + summarizeDataForSync(DATA) + "\n\n"
+        + "The cloud copy currently has: " + summarizeDataForSync(cloud) + "\n\n"
+        + "A safety copy of the current cloud data will be saved to Drive first, in case this is a mistake. Continue?"
+      );
+      if(!ok){ gdriveSetStatus("Sync cancelled - nothing changed.", ""); return; }
+      await driveBackupCopy(JSON.stringify(cloud));
       await driveUploadFile(fileId, JSON.stringify(DATA));
       gdriveSetStatus("Synced " + new Date().toLocaleTimeString() + " - this device's data is now the shared copy.", "ok");
     }
