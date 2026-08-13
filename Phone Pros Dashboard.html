@@ -1762,6 +1762,7 @@ const GCAL_CLIENT_ID = "975538711754-3juuh7ahq8j4t4au8vfb6crid08nq2to.apps.googl
 const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/drive.appdata";
 let gcalAccessToken = null;
 let gcalTokenExpiry = 0;
+let gcalSilentAttempt = false;
 let gcalTokenClient = null;
 
 function gcalSetStatus(text, cls){
@@ -1778,12 +1779,17 @@ function gcalInitTokenClient(){
     client_id: GCAL_CLIENT_ID,
     scope: GCAL_SCOPE,
     callback: (resp)=>{
+      const wasSilent = gcalSilentAttempt;
+      gcalSilentAttempt = false;
       if(!resp || resp.error){
-        gcalSetStatus("Connection failed" + (resp && resp.error ? ": "+resp.error : "") + ".", "err");
+        // A silent auto-reconnect attempt failing just means "click Connect" like
+        // normal - it's not worth alarming the user with an error they didn't ask for.
+        if(!wasSilent) gcalSetStatus("Connection failed" + (resp && resp.error ? ": "+resp.error : "") + ".", "err");
         return;
       }
       gcalAccessToken = resp.access_token;
       gcalTokenExpiry = Date.now() + ((resp.expires_in||3300)*1000) - 60000;
+      localStorage.setItem("phonePros_googleConnected", "1");
       document.getElementById("gcalSyncBtn").style.display = "inline-block";
       document.getElementById("gcalConnectBtn").textContent = "Reconnect Google Account";
       const gdriveBtn = document.getElementById("gdriveConnectBtn");
@@ -1806,6 +1812,29 @@ document.getElementById("gcalConnectBtn").addEventListener("click", ()=>{
   if(!client){ gcalSetStatus("Couldn't start Google sign-in. Reload and try again.", "err"); return; }
   client.requestAccessToken({ prompt: gcalAccessToken ? "" : "consent" });
 });
+
+// If this browser has connected to Google before, quietly try to reconnect on
+// every page load instead of making the user click "Connect" again each time.
+// This never touches your data by itself - it only restores the connection so
+// the Sync buttons work; you still have to click Sync (and confirm) to move data.
+function attemptSilentGoogleReconnect(){
+  if(localStorage.getItem("phonePros_googleConnected") !== "1") return;
+  let tries = 0;
+  const tryConnect = ()=>{
+    tries++;
+    if(typeof google !== "undefined" && google.accounts && google.accounts.oauth2){
+      const client = gcalInitTokenClient();
+      if(client){
+        gcalSilentAttempt = true;
+        client.requestAccessToken({ prompt: "" });
+      }
+      return;
+    }
+    if(tries < 20) setTimeout(tryConnect, 250);
+  };
+  tryConnect();
+}
+attemptSilentGoogleReconnect();
 
 document.getElementById("gcalSyncBtn").addEventListener("click", ()=>{
   if(!gcalAccessToken || Date.now() > gcalTokenExpiry){
@@ -1923,6 +1952,7 @@ function gdriveEnsureConnected(onReady){
       }
       gcalAccessToken = resp.access_token;
       gcalTokenExpiry = Date.now() + ((resp.expires_in||3300)*1000) - 60000;
+      localStorage.setItem("phonePros_googleConnected", "1");
       document.getElementById("gcalSyncBtn").style.display = "inline-block";
       document.getElementById("gcalConnectBtn").textContent = "Reconnect Google Account";
       const gdriveBtn = document.getElementById("gdriveConnectBtn");
