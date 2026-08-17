@@ -682,7 +682,17 @@ details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted
 
 <div class="view" id="view-hours">
   <div class="panel accent-yellow">
-    <h2 id="hoursFormTitle">Log hours</h2>
+    <h2>Clock in / clock out</h2>
+    <div class="form-grid">
+      <div class="field"><label>Employee</label><select id="clockEmployee"></select></div>
+    </div>
+    <button class="btn" id="clockInNowBtn">Clock in now</button>
+    <button class="btn secondary" id="clockOutNowBtn">Clock out now</button>
+    <div class="hint">Clock in starts a new open shift for today with the current time. Clock out closes that employee's most recent open shift with the current time. Use the form below instead if you need to backfill a specific date/time or edit an entry.</div>
+  </div>
+
+  <div class="panel accent-yellow">
+    <h2 id="hoursFormTitle">Log hours manually</h2>
     <input type="hidden" id="hours-id">
     <div class="form-grid">
       <div class="field"><label>Date</label><input type="date" id="hours-date"></div>
@@ -692,6 +702,7 @@ details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted
       <div class="field"><label>Unpaid break (hrs)</label><input type="number" step="0.25" id="hours-break" value="0"></div>
       <div class="field wide"><label>Notes</label><input type="text" id="hours-notes"></div>
     </div>
+    <div class="hint">Clock out can be left blank to save an open shift - fill it in later (by editing this entry, or using "Clock out now" above) once the shift ends.</div>
     <button class="btn amber" id="saveHoursBtn">Save hours</button>
     <button class="btn secondary" id="cancelHoursBtn" style="display:none;">Cancel edit</button>
   </div>
@@ -1472,6 +1483,7 @@ function refreshAllDropdowns(){
   populateSelect(document.getElementById("deal-grade"), GRADES, false);
 
   populateSelect(document.getElementById("hours-employee"), DATA.employees, false);
+  populateSelect(document.getElementById("clockEmployee"), DATA.employees, false);
   populateSelect(document.getElementById("pay-employee"), DATA.employees, false);
   populateSelect(document.getElementById("expense-category"), DATA.expenseCategories, false);
   populateSelect(document.getElementById("mileage-employee"), DATA.employees, false);
@@ -2977,17 +2989,20 @@ function renderHours(){
     body.innerHTML = `<tr><td colspan="9" class="empty-msg">No hours logged yet.</td></tr>`;
     return;
   }
-  body.innerHTML = DATA.hours.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(h=>`
-    <tr>
-      <td>${h.date||""}</td><td>${employeeBadge(h.employee)}</td><td>${h.clockIn||""}</td><td>${h.clockOut||""}</td>
-      <td>${fmtNum(h.breakHrs,2)}</td><td>${fmtNum(hoursWorked(h),2)}</td><td>${otCell(overtimeHours(h))}</td>
+  body.innerHTML = DATA.hours.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"")).map(h=>{
+    const isOpen = h.clockIn && !h.clockOut;
+    return `
+    <tr${isOpen ? ' style="background:#fff8e1;"' : ''}>
+      <td>${h.date||""}</td><td>${employeeBadge(h.employee)}</td><td>${h.clockIn||""}</td>
+      <td>${isOpen ? '<strong>In progress</strong>' : (h.clockOut||"")}</td>
+      <td>${fmtNum(h.breakHrs,2)}</td><td>${isOpen ? "-" : fmtNum(hoursWorked(h),2)}</td><td>${isOpen ? "-" : otCell(overtimeHours(h))}</td>
       <td>${esc(h.notes)||"-"}</td>
       <td class="actions-cell">
         <button class="icon-btn" onclick="editHours('${h.id}')">Edit</button>
         <button class="icon-btn del" onclick="deleteHours('${h.id}')">Delete</button>
       </td>
     </tr>
-  `).join("");
+  `;}).join("");
 }
 
 document.getElementById("exportHoursCsvBtn").addEventListener("click", ()=>{
@@ -3020,7 +3035,7 @@ document.getElementById("saveHoursBtn").addEventListener("click", ()=>{
     breakHrs: parseFloat(document.getElementById("hours-break").value)||0,
     notes: document.getElementById("hours-notes").value,
   };
-  if(!h.date || !h.clockIn || !h.clockOut){ showToast("Date, clock in, and clock out are required"); return; }
+  if(!h.date || !h.clockIn){ showToast("Date and clock in are required"); return; }
   if(id){
     const idx = DATA.hours.findIndex(x=>x.id===id);
     if(idx>=0) DATA.hours[idx]=h;
@@ -3033,6 +3048,37 @@ document.getElementById("saveHoursBtn").addEventListener("click", ()=>{
   showToast("Hours saved");
 });
 document.getElementById("cancelHoursBtn").addEventListener("click", clearHoursForm);
+
+function nowTimeHHMM(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+}
+function findOpenHoursEntry(employee){
+  // "Open" = clocked in but never clocked out. Search newest-first so a stale open
+  // shift from days ago (forgot to clock out) is still what gets closed.
+  return DATA.hours.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||"") || (b.clockIn||"").localeCompare(a.clockIn||"")).find(h=>h.employee===employee && h.clockIn && !h.clockOut);
+}
+document.getElementById("clockInNowBtn").addEventListener("click", ()=>{
+  const employee = document.getElementById("clockEmployee").value;
+  if(!employee){ showToast("Add an employee first (Settings tab)"); return; }
+  const alreadyOpen = findOpenHoursEntry(employee);
+  if(alreadyOpen){ showToast(employee + " is already clocked in since " + alreadyOpen.clockIn + " on " + alreadyOpen.date + " - clock out first."); return; }
+  const h = { id: cryptoId(), date: todayISO(), employee, clockIn: nowTimeHHMM(), clockOut: "", breakHrs: 0, notes: "" };
+  DATA.hours.push(h);
+  saveData(DATA);
+  renderHours();
+  showToast(employee + " clocked in at " + h.clockIn);
+});
+document.getElementById("clockOutNowBtn").addEventListener("click", ()=>{
+  const employee = document.getElementById("clockEmployee").value;
+  if(!employee){ showToast("Add an employee first (Settings tab)"); return; }
+  const openEntry = findOpenHoursEntry(employee);
+  if(!openEntry){ showToast(employee + " doesn't have an open clock-in right now."); return; }
+  openEntry.clockOut = nowTimeHHMM();
+  saveData(DATA);
+  renderHours();
+  showToast(employee + " clocked out at " + openEntry.clockOut);
+});
 document.querySelector('#view-hours .panel.accent-yellow').addEventListener("keydown", e=>{
   if(e.key==="Enter"){
     e.preventDefault();
