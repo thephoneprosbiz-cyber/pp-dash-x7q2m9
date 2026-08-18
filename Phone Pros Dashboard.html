@@ -35,6 +35,9 @@
   --red:#E0473F;
   --red-dark:#A32D2D;
   --red-light:#FBE3E1;
+  --orange:#E8720F;
+  --orange-dark:#A34E09;
+  --orange-light:#FCE7D3;
   --bg:#F2F7FA;
   --card:#FFFFFF;
   --border:#E1E5EA;
@@ -123,6 +126,8 @@ main{padding:24px 28px 60px;max-width:1440px;margin:0 auto;}
 .kpi.c-red .value{color:var(--red-dark);}
 .kpi.c-red.zero{background:var(--green-light);border-left-color:var(--green);}
 .kpi.c-red.zero .value{color:var(--green-dark);}
+.kpi.c-orange{border-left-color:var(--orange);background:var(--orange-light);}
+.kpi.c-orange .value{color:var(--orange-dark);}
 .banner{
   display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius);
   margin-bottom:18px;font-size:13px;border:1px solid;
@@ -141,6 +146,7 @@ main{padding:24px 28px 60px;max-width:1440px;margin:0 auto;}
 .panel.accent-yellow{border-top:4px solid var(--yellow);}
 .panel.accent-green{border-top:4px solid var(--green);}
 .panel.accent-red{border-top:4px solid var(--red);}
+.panel.accent-orange{border-top:4px solid var(--orange);}
 .panel.accent-blue{border-top:4px solid var(--blue);}
 .panel h2{margin:0 0 14px;font-size:16px;font-weight:600;}
 .filter-row{
@@ -681,7 +687,7 @@ details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted
 </div>
 
 <div class="view" id="view-hours">
-  <div class="panel accent-yellow">
+  <div class="panel accent-orange">
     <h2>Clock in / clock out</h2>
     <div class="form-grid">
       <div class="field"><label>Employee</label><select id="clockEmployee"></select></div>
@@ -1011,7 +1017,7 @@ details.panel summary .sub{font-size:12px;font-weight:400;color:var(--text-muted
     </div>
     <div class="hint">Keeps this dashboard's data the same on every device where you're signed in and synced (uses a private file in your own Google Drive - not visible in your normal Drive folder). Whichever device has the newer changes wins when you sync, so sync right before switching devices to avoid losing edits. Before any sync replaces data, you'll see a summary of what's on each side and have to confirm - and a dated safety copy of whatever's about to be replaced is saved to Drive automatically, so a sync from the wrong device can be undone. Same connection as the Google Calendar sync on the Pickup Calendar tab - you only need to connect once.</div>
   </div>
-  <div class="panel">
+  <div class="panel accent-red">
     <h2>Data and backups</h2>
     <div id="backupStatus"></div>
     <p style="font-size:13px;color:var(--text-muted);">Your data is saved automatically in this browser only. Export a backup regularly so you never lose it - especially before clearing browser data or switching computers.</p>
@@ -2252,7 +2258,7 @@ function renderDashboard(){
 
   const kpis = [
     ["Today's pickups", todaysPickups.length, "teal"],
-    ["Unconfirmed pickup requests", unconfirmedPickups.length, unconfirmedPickups.length>0?"yellow":"green"],
+    ["Unconfirmed pickup requests", unconfirmedPickups.length, unconfirmedPickups.length>0?"orange":"green"],
     ["Total deals", deals.length, "blue"],
     ["Devices sold", sold.length, "teal"],
     ["Devices in stock", inStock.length, "baby"],
@@ -2263,8 +2269,8 @@ function renderDashboard(){
     ["Net profit (after expenses)", fmtMoney(netProfit), netProfit>=0?"green":"red"],
     ["Inventory value tied up", fmtMoney(inventoryValue), "baby"],
     ["Total miles driven", fmtNum(totalMiles), "baby"],
-    ["Total gas cost", fmtMoney(totalGas), "yellow"],
-    ["Avg cost / mile", fmtMoney(avgCostMile), "yellow"],
+    ["Total gas cost", fmtMoney(totalGas), "orange"],
+    ["Avg cost / mile", fmtMoney(avgCostMile), "orange"],
     ["Avg profit / deal", fmtMoney(avgProfit), avgProfit>=0?"green":"red"],
     ["Total payroll (all time)", fmtMoney(totalPayroll), "blue"],
     ["Total hours logged", fmtNum(totalHours,1), "baby"],
@@ -3157,8 +3163,8 @@ function renderMileage(){
   document.getElementById("mileageKpiGrid").innerHTML = `
     <div class="kpi c-baby"><div class="label">Business miles (all time)</div><div class="value">${fmtNum(totalMiles)}</div></div>
     <div class="kpi c-blue"><div class="label">Personal/commute miles (all time)</div><div class="value">${fmtNum(totalPersonalMiles)}</div></div>
-    <div class="kpi c-yellow"><div class="label">Total gas cost (all time)</div><div class="value">${fmtMoney(totalGas)}</div></div>
-    <div class="kpi c-yellow"><div class="label">Avg cost / business mile</div><div class="value">${fmtMoney(avgCostMile)}</div></div>
+    <div class="kpi c-orange"><div class="label">Total gas cost (all time)</div><div class="value">${fmtMoney(totalGas)}</div></div>
+    <div class="kpi c-orange"><div class="label">Avg cost / business mile</div><div class="value">${fmtMoney(avgCostMile)}</div></div>
     <div class="kpi c-red ${openCount===0?"zero":""}"><div class="label">Open days (not closed out)</div><div class="value">${openCount}</div></div>
     <div class="kpi c-red ${owed===0?"zero":""}"><div class="label">Owed to employees for gas</div><div class="value">${fmtMoney(owed)}</div></div>
   `;
